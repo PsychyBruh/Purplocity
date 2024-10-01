@@ -1,0 +1,200 @@
+@import "./common.scss";
+
+html {
+  background-color: var(--background);
+}
+
+body {
+  margin: 0px;
+  font-family: $Lato;
+}
+
+button {
+  user-select: none;
+}
+
+h1,
+h2,
+h3 {
+  font-family: $MontserratAlternates;
+}
+
+:focus-visible {
+  outline: none;
+}
+
+svg:not(.defs) {
+  user-select: none;
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  fill: currentColor;
+  // transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+
+  &.patreon {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
+
+html[data-tab] {
+  a:not([tab-index="-1"]):focus {
+    outline: var(--action) solid 1px;
+    border-radius: 5px;
+  }
+}
+
+* {
+  scrollbar-color: var(--text-placeholder);
+
+  // 12px wide
+
+  &::-webkit-scrollbar {
+    width: $scrollbar-width;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    height: 56px;
+    border: 4px solid transparent;
+    border-radius: 8px;
+    background-clip: content-box;
+    background-color: var(--text-placeholder);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-disabled);
+  }
+}
+
+:root[data-service] body {
+  overflow: hidden;
+}
+
+/*@include screenMobile {
+	body {
+		width: 100%;
+	}
+
+	.fixed-wide {
+		width: 100vw;
+	}
+}*/
+
+body {
+  // width: $fixed-width;
+  font-family: $Lato;
+  font-weight: 400;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+main {
+  padding: 20px 0;
+  // width: $fixed-width;
+  // width: calc(100vw - 16px);
+  box-sizing: border-box;
+  flex: none;
+
+  &.padded {
+    padding: 20px 5vw;
+  }
+
+  &.error {
+    pre {
+      white-space: break-spaces;
+    }
+  }
+}
+
+input {
+  font-family: inherit;
+
+  &::placeholder {
+    color: var(--text-placeholder);
+  }
+}
+
+a {
+  text-decoration: inherit;
+  color: inherit;
+}
+
+.h-captcha {
+  min-height: 83px;
+}
+
+main > .prettyBanner {
+  // margin: 0 10px;
+  box-sizing: border-box;
+}
+
+.prettyBanner {
+  font-size: 15px;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 4px;
+
+  a {
+    font-weight: bold;
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  &[data-error] {
+    color: #b94a48;
+    background-color: #f2dede;
+    border-color: #eed3d7;
+  }
+
+  &[data-success] {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+  }
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  font-size: 29px;
+  font-family: $MontserratAlternates;
+
+  > span {
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  &.sub {
+    line-height: 29px;
+    font-size: 22px;
+  }
+
+  &.settings {
+    font-size: 20px;
+    margin-bottom: 0;
+  }
+
+  .back-button {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 10px;
+    cursor: pointer;
+  }
+
+  // for putting a <ThemeSelect> inside of a page title
+  #sort {
+    margin-left: auto;
+  }
+}
+
+// "ghost" text
+.ghost {
+  // font-style: italic;
+  opacity: 0.7;
+  margin-top: 30px;
+}

@@ -1,0 +1,15 @@
+---
+import TheatreCategory from "@components/TheatreCategory.astro";
+import MainLayout from "@layouts/MainLayout.astro";
+---
+
+<MainLayout title="Apps">
+  {
+    Astro.locals.isMainWebsite && (
+      <Fragment slot="head">
+        <meta name="description" content="Find apps on Purplocity." />
+      </Fragment>
+    )
+  }
+  <TheatreCategory name="Apps" category={["app"]} />
+</MainLayout>

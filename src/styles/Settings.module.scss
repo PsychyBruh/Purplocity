@@ -1,0 +1,172 @@
+@import "./common.scss";
+
+$menu-height: 90px;
+
+.section {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  padding: 15px 30px;
+  box-sizing: border-box;
+
+  > div,
+  > form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    max-width: 400px;
+    width: 100%;
+
+    > p {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    > svg {
+      width: 24px;
+      height: 24px;
+      margin-right: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: inherit;
+      height: inherit;
+
+      @include screenMobile {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.main {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  padding-left: 300px;
+  display: flex;
+
+  @include screenMobile {
+    flex-direction: column;
+    padding-left: 0;
+    padding-top: $menu-height;
+  }
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  > svg {
+    width: inherit;
+    height: inherit;
+  }
+}
+
+.inputBar {
+  max-width: 500px;
+}
+
+.themeSelect {
+  margin-right: auto;
+}
+
+.menu {
+  height: 100%;
+  position: fixed;
+  flex-direction: column;
+  overflow-y: auto;
+  display: flex;
+  left: 0;
+  top: 0;
+  background-color: var(--background);
+  margin-top: $nav-height-border;
+  border-right: 1px solid var(--border);
+  width: 300px;
+  height: calc(100vh - $nav-height-border);
+  box-sizing: border-box;
+  transform: translateX(0);
+  z-index: 1;
+
+  @include screenMobile {
+    border-right: 0;
+    padding-left: 0px;
+    width: 100%;
+    height: $menu-height;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px 20px;
+    box-sizing: border-box;
+  }
+}
+
+.entry {
+  cursor: pointer;
+  white-space: pre;
+  border: none;
+  color: var(--contrast-background);
+  display: flex;
+  align-items: center;
+  font: inherit;
+  font-size: 14px;
+  height: 24px;
+  padding: 10px 25px;
+
+  @include screenMobile {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    box-sizing: content-box;
+    border-radius: 5px;
+    padding: 0px;
+    background-color: var(--background-accent-deep-1);
+
+    > span:nth-child(1) {
+      margin-right: 0;
+    }
+  }
+
+  &:hover {
+    background-color: var(--background-accent);
+
+    @include screenMobile {
+      color: var(--contrast-background);
+    }
+  }
+
+  &[data-outlined] {
+    svg:nth-child(1) {
+      display: none;
+    }
+
+    svg:nth-child(2) {
+      display: block;
+    }
+
+    &[data-selected] {
+      svg:nth-child(1) {
+        display: block;
+      }
+
+      svg:nth-child(2) {
+        display: none;
+      }
+    }
+  }
+
+  &[data-selected] {
+    background-color: var(--background-accent);
+  }
+
+  > .name {
+    font-weight: bold;
+  }
+}

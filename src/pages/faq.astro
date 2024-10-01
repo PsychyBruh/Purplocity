@@ -1,0 +1,108 @@
+---
+import themeStyles from "@styles/ThemeElements.module.scss";
+import { appConfig } from "@config/config";
+import MainLayout from "@layouts/MainLayout.astro";
+import HolyText from "@components/HolyText.astro";
+import HolyLink from "@components/HolyLink.astro";
+---
+
+<MainLayout title="FAQ">
+  {
+    Astro.locals.isMainWebsite && (
+      <Fragment slot="head">
+        <meta
+          name="description"
+          content="Purplocity's frequently asked questions."
+        />
+      </Fragment>
+    )
+  }
+  <main class="padded">
+    <section>
+      <h1>
+        <HolyText text="How can I self-host Purplocity?" />
+      </h1>
+      <p>
+        <HolyText
+          text="You can easily self-host/deploy Purplocity by following the instructions on our "
+        />
+        <HolyLink
+          href={appConfig.links.github.holyunblocker}
+          text="GitHub repository."
+          class={themeStyles.themeLink}
+        />
+      </p>
+    </section>
+
+    <section>
+      <h1>
+        <HolyText text="How do I get more links?" />
+      </h1>
+      <p>
+        <HolyText text="You can join the " />
+        <HolyLink
+          href={appConfig.links.discord.holyunblocker}
+          text="Purplocity Discord Server"
+          class={themeStyles.themeLink}
+        />
+        <HolyText
+          text=" to receive more links. In any channel, enter /proxy and select Purplocity."
+        />
+      </p>
+    </section>
+
+    <section>
+      <h1>
+        <HolyText text="The proxy is slow." />
+      </h1>
+      <p>
+        <HolyText
+          text="We try our best to purchase fast servers for everyone. If you want to help us buy faster servers in the future, please "
+        />
+        <HolyLink
+          href={appConfig.links.patreon.holyunblocker}
+          text="consider donating to our Patreon!"
+          class={themeStyles.themeLink}
+        />
+      </p>
+    </section>
+
+    <section>
+      <h1>
+        <HolyText text="Where is this website's source code?" />
+      </h1>
+      <p>
+        <HolyText text="The source code to this website can be found in our " />
+        <HolyLink
+          href={appConfig.links.github.holyunblocker}
+          text="GitHub repository."
+          class={themeStyles.themeLink}
+        />
+      </p>
+    </section>
+
+    <section>
+      <h1>
+        <HolyText text="Is my information on the proxy secure?" />
+      </h1>
+      <p>
+        <HolyText
+          text="We do not collect any data. The information you send is end to end encrypted, depending on whether the website you're trying to access supports HTTPS or not. Your information is only as secure as the sites you are accessing."
+        />
+        <HolyLink
+          href="/privacy"
+          text="You can view our privacy policy here."
+          class={themeStyles.themeLink}
+        />
+      </p>
+    </section>
+    <p class="ghost">
+      <HolyText text="Not what you're looking for? Please feel free to " />
+      <HolyLink
+        class={themeStyles.themeLink}
+        href="/contact"
+        text="Contact Us."
+      />
+    </p>
+  </main>
+</MainLayout>

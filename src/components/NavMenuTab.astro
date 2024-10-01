@@ -1,0 +1,32 @@
+---
+import styles from "@styles/Navigation.module.scss";
+import HolyText from "./HolyText.astro";
+import HolyLink from "./HolyLink.astro";
+
+type Props = Record<string, any> & {
+  href?: string;
+  class?: string;
+  name: string;
+  iconFilled: string;
+  iconOutlined?: string;
+  tabIndex?: number;
+  isNew?: boolean;
+};
+
+const { href, name, iconFilled, iconOutlined, isNew } = Astro.props;
+
+const selected = Astro.url.pathname === href;
+---
+
+<HolyLink
+  href={href}
+  data-nav
+  data-selected={selected || null}
+  data-outlined={iconOutlined !== undefined || null}
+  class={styles.entry}
+  title={name}
+>
+  <span class={styles.icon} set:html={iconFilled + (iconOutlined || "")} />
+  <HolyText class={styles.name} text={name} />
+  {isNew && <span class={styles.new}>new</span>}
+</HolyLink>

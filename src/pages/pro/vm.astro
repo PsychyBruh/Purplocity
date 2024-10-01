@@ -1,0 +1,18 @@
+---
+import styles from "@styles/Subscriber.module.scss";
+import MainLayout from "@layouts/MainLayout.astro";
+
+const { user, acc } = Astro.locals;
+if (await acc.isBanned()) return acc.toBan();
+if (acc.needsToVerifyTotp()) return acc.toVerifyTotp();
+if (!user) return acc.toLogin();
+if (!user.email_verified) return acc.toVerifyEmail();
+// check if they paid
+if (!acc.isPremium()) return Astro.redirect("/pro/tiers?poor", 302);
+---
+
+<MainLayout>
+  <main class={styles.subscriberMain}>
+    <p>virtual browser coming very soon!!</p>
+  </main>
+</MainLayout>

@@ -1,0 +1,145 @@
+---
+import ThemeSelect from "@components/ThemeSelect.astro";
+import SettingsLayout from "@layouts/SettingsLayout.astro";
+import styles from "@styles/Settings.module.scss";
+import Check from "@icons/check_24dp.svg?react";
+import themeStyles from "@styles/ThemeElements.module.scss";
+import Banner from "@components/Banner.astro";
+import searchEngines from "@lib/searchEngines";
+import HolyText from "@components/HolyText.astro";
+
+let error: string | undefined;
+
+// noscript support eeeeeeeee
+if (Astro.request.method === "POST")
+  try {
+    const data = await Astro.request.formData();
+    const type = data.get("type")?.toString();
+
+    switch (type) {
+      case "proxyMode":
+        {
+          const proxyMode = data.get("proxyMode")?.toString();
+          if (!Astro.locals.setProxyMode(proxyMode))
+            error = "Please enter a valid proxyMode!";
+        }
+        break;
+      case "wispServer":
+        {
+          const wispServer = data.get("newWispUrl")?.toString();
+          if (!Astro.locals.setWispServer(wispServer))
+            error = "Please enter a valid wisp server URL!";
+        }
+        break;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+---
+
+<SettingsLayout title="Proxy Settings">
+  <section class={styles.section}>
+    <h1 class="page-title sub settings"><HolyText text="Proxy Settings" /></h1>
+    <Banner error={error} />
+    <form method="post">
+      <p><HolyText text="Proxy Mode:" /></p>
+      <ThemeSelect
+        name="proxyMode"
+        id="proxyMode"
+        class={styles.themeSelect}
+        options={[
+          { name: "Embedded", value: "embedded" },
+          { name: "Redirect", value: "redirect" },
+          { name: "about:blank", value: "about:blank" },
+        ]}
+        value={Astro.locals.proxyMode}
+      />
+    </form>
+    <form method="post">
+      <p><HolyText text="Search Engine:" /></p>
+      <ThemeSelect
+        name="searchEngine"
+        class={styles.themeSelect}
+        id="searchEngine"
+        options={searchEngines.map(({ name }, i) => ({
+          name,
+          value: i.toString(),
+        }))}
+        value={Astro.locals.searchEngine.toString()}
+      />
+    </form>
+    <form method="post">
+      <!-- noscript support -->
+      <p><HolyText text="Wisp Server:" /></p>
+      <input type="text" name="type" value="wispServer" hidden />
+      <div class:list={[themeStyles.ThemeInputBar, styles.inputBar]}>
+        <input
+          class={themeStyles.thinPadRight}
+          type="text"
+          name="newWispUrl"
+          placeholder="wss://api.Purplocityofficial.net/"
+          id="newWispUrl"
+        />
+        <button
+          type="submit"
+          class:list={[themeStyles.ThemeButton, themeStyles.block]}
+          set:html={Check}
+        />
+      </div>
+    </form>
+    <!-- noscript!!!! -->
+    <noscript>
+      <input
+        type="submit"
+        class:list={[themeStyles.save, themeStyles.ThemeButton]}
+        value="Save"
+      />
+    </noscript>
+    {
+      !Astro.locals.isMainWebsite && (
+        <p class="ghost">
+          <HolyText text="Are you the maintainer of this instance? If you want to use a separate Wisp server by default, and even configure it on a subdomain, you can change 'separateWispServer' in ./config/config.js of your instance." />
+        </p>
+      )
+    }
+  </section>
+</SettingsLayout>
+<script>
+  import { setSearchEngine, setProxyMode, setWispServer } from "@lib/cookies";
+  import { getWispUrl } from "@lib/register-sw";
+
+  document.addEventListener("astro:page-load", () => {
+    const proxyMode = document.querySelector<HTMLInputElement>("#proxyMode")!;
+    if (proxyMode === null) return;
+    const newWispUrl = document.getElementById(
+      "newWispUrl"
+    )! as HTMLInputElement;
+    newWispUrl.placeholder = getWispUrl();
+    newWispUrl.form!.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (newWispUrl.value === "") {
+        document.cookie = `wisp=; expires=${new Date(0)}`;
+        location.reload();
+        return;
+      }
+      try {
+        new URL(newWispUrl.value);
+      } catch (err) {
+        alert("Invalid wisp url!");
+        return;
+      }
+      setWispServer(newWispUrl.value);
+    });
+
+    proxyMode.addEventListener("change", () => {
+      setProxyMode(proxyMode.value);
+    });
+
+    const searchEngine =
+      document.querySelector<HTMLInputElement>("#searchEngine")!;
+
+    searchEngine.addEventListener("change", () => {
+      setSearchEngine(Number(searchEngine.value));
+    });
+  });
+</script>

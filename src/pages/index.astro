@@ -1,0 +1,113 @@
+---
+import MainLayout from "@layouts/MainLayout.astro";
+import styles from "@styles/Home.module.scss";
+import Underline from "@icons/underline.svg?react";
+import themeStyles from "@styles/ThemeElements.module.scss";
+import ProxyOmnibox from "@components/ProxyOmnibox.astro";
+import UltravioletIcon from "@icons/ultraviolet_icon.svg?react";
+import HolyText from "@components/HolyText.astro";
+import HolyLink from "@components/HolyLink.astro";
+import { appConfig } from "@config/config";
+---
+
+<MainLayout title="Purplocity">
+  {
+    Astro.locals.isMainWebsite && (
+      <Fragment slot="head">
+        <meta
+          name="description"
+          content="Purplocity is a web proxy service with support for many sites. Unblock websites on Chromebooks at school and work for free!"
+        />
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "What proxies does Purplocity have?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Purplocity is powered by Ultraviolet.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Where is Purplocity's source code?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Purplocity's source code can be found at https://github.com/PsychyBruh/Purplocity",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Where is Ultraviolet's source code?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Ultraviolet's source code can be found at https://github.com/titaniumnetwork-dev/Ultraviolet",
+                },
+              },
+            ],
+          })}
+        />
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: `https://${Astro.url.hostname}/uv?q={search_term_string}`, // replace with the correct URL
+            },
+            "query-input": "required name=search_term_string",
+          })}
+        />
+      </Fragment>
+    )
+  }
+  <main class={styles.main}>
+    <div class={styles.title}>
+      <span class={styles.big}>
+        <HolyText text="Ending Internet " />
+        <span class={styles.pretty}>
+          <HolyText text="Censorship." />
+          <div class={styles.prettyUnderline} set:html={Underline} />
+        </span>
+      </span>
+      <h3 class={styles.small}>
+        <HolyText text="Privacy right at your fingertips." />
+      </h3>
+    </div>
+    <div class={styles.focus}>
+      <button
+        type="button"
+        class:list={[themeStyles.ThemeButton, styles.button]}
+        onclick="setNavExpanded(true)"
+      >
+        <HolyText text="Get Started" />
+      </button>
+      <ProxyOmnibox searchEngine={Astro.locals.searchEngine} />
+    </div>
+    {
+      "billigerhost" in appConfig.links && (
+        <div class={styles.nag}>
+          <HolyLink
+            class={themeStyles.themeLink}
+            href={appConfig.links.billigerhost}
+            text="Proxy site hosting starting at $6.99. Check out BilligerHost."
+          />
+        </div>
+      )
+    }
+    <HolyLink class={styles.poweredBy} href="/uv">
+      <Fragment set:html={UltravioletIcon} />
+      <span
+        ><HolyText text="Powered by " /><b><HolyText text="Ultraviolet" /></b
+        ></span
+      >
+    </HolyLink>
+  </main>
+</MainLayout>

@@ -1,0 +1,64 @@
+---
+import ThemeSelect from "@components/ThemeSelect.astro";
+import SettingsLayout from "@layouts/SettingsLayout.astro";
+import styles from "@styles/Settings.module.scss";
+import Banner from "@components/Banner.astro";
+
+let error: string | undefined;
+
+// noscript support eeeeeeeee
+if (Astro.request.method === "POST")
+  try {
+    const data = await Astro.request.formData();
+    const type = data.get("type")?.toString();
+
+    switch (type) {
+      case "theme":
+        {
+          const theme = data.get("theme")?.toString();
+          if (!Astro.locals.setTheme(theme))
+            error = "Please enter a valid theme!";
+        }
+        break;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+---
+
+<SettingsLayout title="General Settings">
+  {error && <Banner error={error} />}
+  <section class={styles.section}>
+    <h1 class="page-title sub settings">Theme Settings</h1>
+    <p>Theme:</p>
+    <form>
+      <!-- noscript support -->
+      <input type="text" name="type" value="theme" hidden />
+      <ThemeSelect
+        class={styles.themeSelect}
+        value={Astro.locals.theme}
+        name="value"
+        id="themeSwitcher"
+        options={[
+          { name: "Day", value: "Day" },
+          {
+            name: "Night",
+            value: "night",
+          },
+        ]}
+      />
+    </form>
+  </section>
+</SettingsLayout>
+<script>
+  import { setTheme } from "@lib/cookies";
+
+  document.addEventListener("astro:page-load", () => {
+    const themeSwitcher =
+      document.querySelector<HTMLInputElement>("#themeSwitcher");
+    if (themeSwitcher === null) return;
+    themeSwitcher.addEventListener("change", () => {
+      setTheme(themeSwitcher.value);
+    });
+  });
+</script>

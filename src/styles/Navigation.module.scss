@@ -1,0 +1,341 @@
+@import "./common.scss";
+
+.nav > .logo,
+.content > .menu > .top > .logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: $nav-height;
+  padding: 0px 15px;
+  color: inherit;
+  white-space: nowrap;
+  user-select: none;
+  width: 35px;
+
+  > svg {
+    width: inherit;
+    height: inherit;
+  }
+
+  @include screenMobile {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+  }
+}
+
+html[data-tab] {
+  .button:not([tabIndex="-1"]):focus {
+    outline: var(--action) solid 2px;
+  }
+}
+
+.button {
+  box-sizing: content-box;
+  margin: auto 5px;
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+  font-size: 20px;
+  flex-shrink: 0; // caused by shiftRight
+  width: 30px;
+  height: 30px;
+
+  &:hover {
+    background-color: var(--background-accent);
+  }
+
+  svg {
+    fill: var(--text);
+  }
+
+  // if the SVG should be centered
+  // used on google icons
+  &.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+      width: unset;
+      height: unset;
+    }
+  }
+
+  // make it smaller & center it
+  &.git svg {
+    margin: 5px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.nav {
+  display: flex;
+  width: 100vw;
+  // width: $fixed-width;
+  height: $nav-height;
+  box-sizing: border-box;
+  align-content: center;
+  position: fixed;
+  color: var(--text);
+  border-bottom: var(--border) 1px solid;
+  padding: 0px 18px;
+  text-align: center;
+  background: var(--background);
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10000;
+
+  > .collapsable {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+.title {
+  font-family: $MontserratAlternates;
+  font-weight: 900;
+  text-wrap: nowrap;
+  user-select: none;
+  display: flex;
+  align-items: center;
+
+  @include screenMobile {
+    display: none;
+  }
+}
+
+.shiftRight {
+  width: 100%;
+  display: block;
+}
+
+.content {
+  padding-top: $nav-height-border;
+  flex-direction: column;
+  min-height: calc(100vh - $nav-height-border);
+  overflow: hidden;
+  display: flex;
+}
+
+.cover {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.3s, visibility 0.3s;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 10001;
+}
+
+.menu {
+  position: fixed;
+  flex-direction: column;
+  display: flex;
+  visibility: visible;
+  background-color: var(--background);
+  border-right: 1px solid var(--border);
+  left: 0;
+  top: 0;
+  width: 300px;
+  height: 100vh;
+  box-sizing: border-box;
+  transform: translateX(-100%);
+  transition: transform 0.3s, visibility 0.3s 0.3s;
+  overflow: hidden;
+  z-index: 10002;
+
+  @include screenMobile {
+    width: 100%;
+    height: 100vh;
+    transition: none;
+
+    > .menuList {
+      width: 100vw;
+      // width: $fixed-width;
+      padding: 6px 5px;
+
+      > .entry {
+        border-radius: 5px;
+      }
+    }
+  }
+}
+
+.top {
+  padding: 0px 18px;
+  padding-left: 18px;
+  height: $nav-height;
+  box-sizing: border-box;
+  border-bottom: var(--border) 1px solid;
+  width: 100vw;
+  // width: $fixed-width;
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  position: relative;
+}
+
+html[data-tab] {
+  .menuList > .entry:focus {
+    outline: var(--action) solid 2px;
+  }
+}
+
+.menuList {
+  padding: 6px 5px 0px 0px;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 100%;
+  text-align: left;
+  scrollbar-width: thin;
+  box-sizing: border-box;
+
+  > .entry {
+    cursor: pointer;
+    white-space: pre;
+    background-color: transparent;
+    border: none;
+    color: var(--contrast-background);
+    display: flex;
+    align-items: center;
+    font: inherit;
+    font-size: 14px;
+    height: 24px;
+    padding: 10px 25px;
+    user-select: none;
+
+    @include screenMobile {
+      height: 30px;
+    }
+
+    &[data-outlined] {
+      svg:nth-child(1) {
+        display: none;
+      }
+
+      svg:nth-child(2) {
+        display: block;
+      }
+
+      &[data-selected] {
+        svg:nth-child(1) {
+          display: block;
+        }
+
+        svg:nth-child(2) {
+          display: none;
+        }
+      }
+    }
+
+    &[data-selected] {
+      background-color: var(--background-accent-deep-1);
+
+      > .name {
+        font-weight: bold;
+      }
+    }
+
+    > .icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      > svg {
+        width: inherit;
+        height: inherit;
+      }
+    }
+
+    &[data-selected] {
+      color: var(--text);
+      background-color: var(--background-accent);
+    }
+
+    &:hover {
+      color: var(--text);
+      background-color: var(--background-accent-deep-1);
+    }
+  }
+
+  > .title {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 25px;
+    color: var(--contrast-background);
+  }
+}
+
+.bar {
+  margin: 10px 0px;
+  width: 100%;
+  border-bottom: 1px solid var(--text-accent);
+}
+
+.genres {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  padding: 10px 25px;
+
+  > .entry {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    margin: 2px;
+    height: 20px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 13px;
+    font-family: $MontserratAlternates;
+    color: var(--text-placeholder);
+    white-space: nowrap;
+    user-select: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--background-accent);
+
+      @include screenMobile {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+html[data-expanded] {
+  .content {
+    > .menu {
+      transform: translateX(0%);
+    }
+
+    > .cover {
+      opacity: 1;
+      visibility: visible;
+
+      @include screenMobile {
+        opacity: 0;
+      }
+    }
+  }
+}
+
+.new {
+  line-height: 1em;
+  padding: 2px 5px;
+  margin-left: 5px;
+  border-radius: 10px;
+  background-color: var(--error);
+  color: white;
+  font-size: 12px;
+}

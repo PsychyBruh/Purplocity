@@ -1,0 +1,11 @@
+@import "./common.scss";
+
+.content {
+  margin: auto;
+  max-width: 584px;
+  padding: 20px 16px;
+
+  .title {
+    text-align: center;
+  }
+}

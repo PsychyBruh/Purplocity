@@ -1,0 +1,28 @@
+---
+import styles from "@styles/Settings.module.scss";
+import HolyText from "./HolyText.astro";
+
+type Props = Record<string, any> & {
+  href?: string;
+  name: string;
+  iconFilled: string;
+  iconOutlined?: string;
+  tabIndex?: number;
+};
+
+const { href, name, iconFilled, iconOutlined } = Astro.props;
+
+const selected = Astro.url.pathname === href;
+---
+
+<a
+  href={href}
+  data-settings
+  data-selected={selected || null}
+  data-outlined={iconOutlined !== undefined || null}
+  class={styles.entry}
+  title={name}
+>
+  <span class={styles.icon} set:html={iconFilled + (iconOutlined || "")} />
+  <HolyText class={styles.name} text={name} />
+</a>

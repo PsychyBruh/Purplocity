@@ -1,0 +1,137 @@
+---
+import MainLayout from "@layouts/MainLayout.astro";
+import themeStyles from "@styles/ThemeElements.module.scss";
+import { appConfig } from "@config/config";
+import HolyLink from "@components/HolyLink.astro";
+import HolyText from "@components/HolyText.astro";
+import { accountsEnabled } from "@config/apis";
+---
+
+<MainLayout title="Credits">
+  <main class="padded">
+    <h3><HolyText text="THANK YOU FOR SUPPORTING US :D" /></h3>
+
+    <h2><HolyText text="Credits" /></h2>
+
+    <h4><HolyText text="Operations" /></h4>
+
+    <ul>
+      <li>
+        <HolyLink
+          href="https://github.com/e9x"
+          class={themeStyles.themeLink}
+          text="Susshi"
+        />
+        - <HolyText text="Owner of Purplocity, main developer" />
+      </li>
+      <li><HolyText text="Eli - CFO/NFT specialist" /></li>
+    </ul>
+
+    <h4><HolyText text="Sponsors" /></h4>
+
+    <ul>
+      {
+        accountsEnabled && (
+          <li>
+            <HolyLink
+              href="/pro/tiers"
+              class={themeStyles.themeLink}
+              text="Premium Subscribers"
+            />
+          </li>
+        )
+      }
+      <li>
+        <HolyLink
+          href="https://github.com/z3db0y"
+          class={themeStyles.themeLink}
+          text="z3db0y"
+        />
+        - <HolyText text="MASSIVE DONATOR :D" />
+      </li>
+      {
+        !Astro.locals.isMainWebsite && (
+          <>
+            <li>
+              <HolyLink
+                href="https://www.my.gov.sa/wps/portal/snp/main?lang=en"
+                class={themeStyles.themeLink}
+                text="The Kingdom of Saudi Arabia"
+              />
+            </li>
+            <li>
+              <HolyLink
+                href="https://www.mturk.com/"
+                class={themeStyles.themeLink}
+                text="Jeff Bezos"
+              />{" "}
+              - <HolyText text="Amazon Mechanical Turk/AI Chatbot" />
+            </li>
+          </>
+        )
+      }
+    </ul>
+
+    <h4><HolyText text="Community" /></h4>
+    <p>
+      <HolyLink
+        href={appConfig.links.discord.holyunblocker}
+        class={themeStyles.themeLink}
+        text="Click to join our Discord server!"
+      />
+    </p>
+    <ul>
+      <li>
+        <HolyLink
+          href="https://github.com/s1monlol"
+          class={themeStyles.themeLink}>Simon</HolyLink
+        > - <HolyText text="Chat Mod, Professional Gambler" />
+      </li>
+      <li>
+        <HolyLink
+          href="https://github.com/Degen-dev"
+          class={themeStyles.themeLink}>DG0Xe3</HolyLink
+        > - <HolyText text="Chat Mod, The Meal" />
+      </li>
+      <li>
+        <HolyLink
+          href="https://github.com/QuiteAFancyEmerald"
+          class={themeStyles.themeLink}
+          text="Quite A Fancy Emerald"
+        /> - <HolyText text="Original creator of Purplocity" />
+      </li>
+    </ul>
+
+    <h4><HolyText text="Software" /></h4>
+    <ul>
+      <li>
+        <HolyLink
+          href="https://github.com/BinBashBanana"
+          class={themeStyles.themeLink}
+          text="OlyB"
+        /> - <HolyText text="Creator of WebRetro" />
+      </li>
+      <li>
+        <HolyLink
+          href={appConfig.links.github.mercuryworkshop}
+          class={themeStyles.themeLink}
+          text="Mercury Workshop"
+        /> - <HolyText text="Creators of Wisp" />
+      </li>
+      <li>
+        <HolyLink
+          href="https://github.com/caracal-js"
+          class={themeStyles.themeLink}
+          text="sexyduceduce"
+        /> - <HolyText text="Creator of Ultraviolet" />
+      </li>
+      <li>
+        <HolyLink
+          href={appConfig.links.discord.titaniumnetwork}
+          class={themeStyles.themeLink}
+          text="TitaniumNetwork"
+        /> - <HolyText text="Maintainers of Ultraviolet" />
+      </li>
+    </ul>
+  </main>
+</MainLayout>

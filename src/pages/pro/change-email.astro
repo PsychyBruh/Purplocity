@@ -1,0 +1,118 @@
+---
+import styles from "@styles/Subscriber.module.scss";
+import MainLayout from "@layouts/MainLayout.astro";
+import ArrowBackIcon from "@icons/arrow_back_FILL0_wght400_GRAD0_opsz24.svg?react";
+import Banner from "@components/Banner.astro";
+import { db } from "@config/apis";
+import { validateCaptcha, validateEmail } from "@lib/util";
+import {
+  canSendEmail,
+  generateVerificationSecret,
+  sendChangeEmailVerification,
+} from "@lib/email";
+import InputCaptcha from "@components/InputCaptcha.astro";
+
+const { origin, user, ip, acc } = Astro.locals;
+if (await acc.isBanned()) return acc.toBan();
+if (acc.needsToVerifyTotp()) return acc.toVerifyTotp();
+if (!user) return acc.toLogin();
+
+let email: string | undefined;
+let error: string | undefined;
+
+if (Astro.request.method === "POST")
+  try {
+    const data = await Astro.request.formData();
+    email = data.get("email")?.toString().trim() || "";
+    const captchaToken = data.get("g-recaptcha-response")?.toString();
+    error =
+      validateEmail(email, user.email) ||
+      (await validateCaptcha(captchaToken, ip)) ||
+      (await canSendEmail(user, email, ip));
+
+    if (!error) {
+      const verificationSecret = generateVerificationSecret();
+
+      await db.query(
+        "UPDATE users SET new_email = $1, new_email_verification_secret = $2 WHERE id = $3;",
+        [email, verificationSecret, user.id]
+      );
+      await sendChangeEmailVerification(
+        origin,
+        user,
+        email,
+        verificationSecret
+      );
+
+      return acc.toVerifyNewEmail();
+    }
+  } catch (err) {
+    // @ts-ignore
+    if (err?.code === "P2002") {
+      error = "Email already exists.";
+      Astro.response.status = 400;
+    } else {
+      console.error("caught err:");
+      console.error(err);
+    }
+  }
+---
+
+<MainLayout>
+  <main class={styles.subscriberMain}>
+    <h1 class="page-title sub">
+      <a class="back-button" href="/pro/dashboard" set:html={ArrowBackIcon} />
+      Change Email
+    </h1>
+    <Banner error={error} />
+    <form class:list={[styles.changeForm, styles.user]} method="post">
+      <label class={styles.manageField}>
+        <div>
+          Current Email {user.email_verified ? "(verified)" : "(unverified)"}
+        </div>
+        <input
+          type="text"
+          class={styles.prettyinput}
+          id="currentEmail"
+          value={user.email}
+          readonly
+        />
+      </label>
+      <label class={styles.manageField}>
+        <div>New Email</div>
+        <input
+          type="text"
+          class={styles.prettyinput}
+          id="email"
+          name="email"
+          value={email}
+        />
+      </label>
+      <InputCaptcha />
+      <input
+        class:list={[styles.prettySubmit, styles.inline]}
+        type="submit"
+        value="Change Email"
+      />
+    </form>
+  </main>
+</MainLayout>
+<script>
+  import { validateEmail } from "@lib/validation";
+
+  const currentEmail =
+    document.querySelector<HTMLInputElement>("#currentEmail")!;
+  const email = document.querySelector<HTMLInputElement>("#email")!;
+  email.focus();
+
+  email.form!.addEventListener("submit", (event) => {
+    const value = email.value.trim();
+    let error: string | undefined;
+    error = validateEmail(value, currentEmail.value);
+
+    if (error) {
+      event.preventDefault();
+      alert(error);
+    }
+  });
+</script>

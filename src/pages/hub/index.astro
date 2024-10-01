@@ -1,0 +1,123 @@
+---
+// popular games
+
+import TheatreSearchBar from "@components/TheatreSearchBar.astro";
+import themeStyles from "@styles/ThemeElements.module.scss";
+import { gameCategories, type Category } from "@lib/gameCategories";
+import styles from "@styles/TheatreCategory.module.scss";
+import ArrowForward from "@icons/arrow_forward_24dp.svg?react";
+import MainLayout from "@layouts/MainLayout.astro";
+import { dbEnabled, theatreAPI, theatreAPIMirror } from "@lib/theatre";
+import type { ListData, TheatreEntryMin } from "@lib/TheatreAPI";
+import TheatreItem from "@components/TheatreItem.astro";
+import TheatreCategory from "@components/TheatreCategory.astro";
+import Banner from "@components/Banner.astro";
+import TheatrePlayer from "@components/TheatrePlayer.astro";
+
+const entryLimit = 15;
+
+// const categoryQuery = categories.map((category) => category.id).join(",");
+
+let error: string | undefined;
+let data: ListData | undefined;
+
+const v = Astro.url.searchParams.get("v");
+
+const q = Astro.url.searchParams.get("q");
+
+if (v === null)
+  try {
+    data = await (dbEnabled ? theatreAPI : theatreAPIMirror).list({
+      sort: "plays",
+      limitPerCategory: entryLimit,
+      search: q,
+    });
+  } catch (err) {
+    // refresh after 5 seconds
+    error =
+      "We were unable to process your request. Please try again later, or [Contact Us](/contact) if this continues to happen";
+    Astro.response.headers.set("reload", "5");
+    Astro.response.status = 502;
+    console.error(err);
+  }
+
+const renderCategories: { category: Category; entries: TheatreEntryMin[] }[] =
+  [];
+
+if (data !== undefined) {
+  if (q !== undefined) {
+    // do stuff with query here
+    if (data.entries.length === 0) {
+      Astro.response.status = 404;
+    }
+  }
+
+  for (const category of gameCategories) {
+    const entries = data.entries.filter((e) =>
+      e.category.includes(category.id)
+    );
+
+    // hide empty categories
+    if (entries.length !== 0)
+      renderCategories.push({
+        category,
+        entries,
+      });
+  }
+}
+---
+
+{
+  v === null ? (
+    <MainLayout title="Popular Games">
+      {Astro.locals.isMainWebsite && (
+        <Fragment slot="head">
+          <meta
+            name="description"
+            content={
+              q === null
+                ? "Popular games on Purplocity."
+                : `Find ${q} games on Purplocity`
+            }
+          />
+        </Fragment>
+      )}
+      {q === null ? (
+        <>
+          <TheatreSearchBar />
+          <main class={styles.main}>
+            <Banner error={error} />
+            {renderCategories.map(({ category, entries }) => (
+              <section class={styles.expand}>
+                <div class={styles.name}>
+                  <h1>{category.name}</h1>
+                  <a
+                    class={themeStyles.themeLink}
+                    href={`/hub/${category.id}`}
+                    class={styles.seeAll}
+                  >
+                    See All
+                    <Fragment set:html={ArrowForward} />
+                  </a>
+                </div>
+                <div class:list={[styles.items, styles.flex]}>
+                  {entries.map((e) => (
+                    <TheatreItem name={e.name} id={e.id} />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </main>
+        </>
+      ) : (
+        <TheatreCategory
+          name={`Search results for '${q}'`}
+          search={q}
+          placeholder="Search by game name"
+        />
+      )}
+    </MainLayout>
+  ) : (
+    <TheatrePlayer id={v} />
+  )
+}

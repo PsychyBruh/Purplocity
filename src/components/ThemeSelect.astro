@@ -1,0 +1,200 @@
+---
+import themeStyles from "@styles/ThemeElements.module.scss";
+import ExpandMore from "@icons/expand_more_24dp.svg?react";
+
+interface Props {
+  options: {
+    name: string;
+    value: string;
+    disabled?: boolean;
+  }[];
+  name?: string;
+  class?: string;
+  id?: string;
+  value?: string;
+}
+
+const options = [];
+
+let defaultSelected = 0;
+
+for (const child of Astro.props.options) {
+  const option: any[] = [child.name, child.value];
+  if (child.disabled) option.push(1);
+  if (child.value === Astro.props.value) defaultSelected = options.length;
+  options.push(option);
+}
+---
+
+<script>
+  function loadSelects() {
+    for (const ts of document.querySelectorAll<
+      HTMLDivElement & { hooked?: boolean }
+    >("[data-ts]")) {
+      if (ts.hooked) continue;
+      ts.hooked = true;
+
+      const toggle = ts.querySelector<HTMLDivElement>("[data-ts-toggle]")!;
+      const options = (
+        JSON.parse(ts.getAttribute("data-ts")!) as [
+          name: string,
+          value: string,
+          disabled?: number,
+        ][]
+      ).map(([name, value, disabled]) => ({
+        name,
+        value,
+        disabled: disabled === 1,
+      }));
+
+      const availableOptions: number[] = [];
+      for (let i = 0; i < options.length; i++) {
+        if (!options[i].disabled) availableOptions.push(i);
+      }
+
+      let open = false;
+      let selected = Number(ts.getAttribute("data-selected") || "0");
+      let lastSelect = -1;
+      const input = ts.querySelector<HTMLInputElement>("input")!;
+      const name = ts.querySelector<HTMLSpanElement>("[data-ts-name]")!;
+
+      Object.defineProperty(ts, "value", {
+        get: () => {
+          return options[selected].value;
+        },
+        set: (v) => {
+          const newI = options.findIndex((e) => e.value === v);
+          // console.debug("new index:", newI);
+          setSelected(newI);
+        },
+      });
+
+      const setLastSelected = () => {};
+
+      ts.addEventListener("keydown", (event) => {
+        let preventDefault = true;
+
+        switch (event.code) {
+          case "Escape":
+            break;
+          case "ArrowDown":
+          case "ArrowUp":
+            {
+              switch (event.code) {
+                case "ArrowDown":
+                  if (lastSelect === availableOptions.length - 1)
+                    lastSelect = 0;
+                  else lastSelect++;
+                  break;
+                case "ArrowUp":
+                  if (lastSelect === 0) {
+                    lastSelect = availableOptions.length - 1;
+                  } else lastSelect--;
+                  break;
+                // no default
+              }
+              setLastSelected();
+            }
+            break;
+          case "Enter":
+            if (open) setSelected(lastSelect);
+            else setOpen(true);
+            break;
+          case "Space":
+            setOpen(true);
+            break;
+          default:
+            preventDefault = false;
+            break;
+          // no default
+        }
+
+        if (preventDefault) {
+          event.preventDefault();
+        }
+      });
+
+      function setOpen(value: boolean) {
+        open = value;
+        if (open) ts.setAttribute("data-open", "");
+        else ts.removeAttribute("data-open");
+      }
+
+      ts.addEventListener("blur", (event) => {
+        if (
+          !(event.target as HTMLElement).contains(event.relatedTarget as Node)
+        )
+          setOpen(false);
+      });
+
+      function setSelected(value: number) {
+        selected = value;
+        setOpen(false);
+        name.textContent = options[selected].name;
+        input.value = options[value]?.value || "";
+        ts.dispatchEvent(new Event("change"));
+      }
+
+      toggle.addEventListener("click", () => {
+        setLastSelect(selected);
+        ts.focus();
+        setOpen(!open);
+      });
+
+      const list = ts.querySelector<HTMLDivElement>("[data-ts-list]")!;
+      list.addEventListener("mouseleave", () => {
+        setLastSelect(-1);
+      });
+
+      function setLastSelect(value: number) {
+        lastSelect = value;
+
+        for (let i = 0; i < list.children.length; i++) {
+          const option = options[i];
+          const child = list.children[i] as HTMLDivElement;
+          if (option.disabled) continue;
+          if (i === lastSelect) child.setAttribute("data-hover", "");
+          else child.removeAttribute("data-hover");
+        }
+      }
+
+      for (let i = 0; i < list.children.length; i++) {
+        const option = options[i];
+        const child = list.children[i] as HTMLDivElement;
+        if (option.disabled) continue;
+
+        child.addEventListener("click", () => {
+          setSelected(i);
+        });
+
+        child.addEventListener("mouseover", () => {
+          setLastSelect(i);
+        });
+      }
+    }
+  }
+  loadSelects();
+  document.addEventListener("astro:page-load", loadSelects);
+</script>
+<div
+  data-ts={JSON.stringify(options)}
+  tabindex="0"
+  class:list={[themeStyles.ThemeSelect, Astro.props.class]}
+  data-selected={defaultSelected === 0 ? undefined : defaultSelected}
+  id={Astro.props.id}
+>
+  <input readonly hidden name={Astro.props.name} />
+  <div data-ts-toggle class={themeStyles.toggle}>
+    <span data-ts-name>{Astro.props.options[defaultSelected].name}</span>
+    <div set:html={ExpandMore} />
+  </div>
+  <div class={themeStyles.list} data-ts-list>
+    {
+      Astro.props.options.map((option) => (
+        <div data-disabled={option.disabled ? "1" : undefined}>
+          {option.name}
+        </div>
+      ))
+    }
+  </div>
+</div>

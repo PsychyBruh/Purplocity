@@ -1,0 +1,228 @@
+@import "./common.scss";
+
+$height: 44px;
+
+.inputBar {
+  width: 100%;
+
+  form {
+    display: contents;
+  }
+}
+
+:root[data-omnibox-focused] body {
+  @include screenMobile {
+    overflow: hidden;
+  }
+}
+
+.omnibox {
+  $border: 1px;
+  width: 100%;
+  max-width: 584px;
+  height: $height;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin: 0 auto;
+  z-index: 10;
+
+  // a search glass icon
+  // search icon is just the button except it isn't clickable
+  .searchIcon,
+  .searchButton {
+    border: 0;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 100%;
+    flex-shrink: 0;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    color: var(--text-placeholder);
+
+    > svg {
+      width: 20px !important;
+      height: 20px !important;
+      display: block;
+      text-align: center;
+      pointer-events: none;
+    }
+  }
+
+  // a clear search icon
+  .clearButton {
+    border: 0;
+    background-color: transparent;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 100%;
+    flex-shrink: 0;
+    color: var(--text-placeholder);
+    cursor: pointer;
+
+    > svg {
+      width: 20px !important;
+      height: 20px !important;
+      display: block;
+      text-align: center;
+      pointer-events: none;
+    }
+  }
+
+  &[data-text] {
+    &[data-focused],
+    &:hover {
+      .clearButton {
+        display: flex;
+      }
+    }
+  }
+
+  &:hover,
+  &[data-focused] {
+    .searchButton {
+      cursor: pointer;
+      background-color: var(--action) !important;
+      color: white;
+    }
+  }
+
+  &.theatreSearch {
+    padding: 0 16px;
+    box-sizing: border-box;
+    margin-top: 20px;
+
+    .suggested {
+      width: calc(100% - 32px);
+
+      @include screenMobile {
+        width: calc(100% - 20px);
+      }
+    }
+  }
+
+  &[data-suggested] {
+    .inputBar {
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .searchButton {
+      border-bottom-right-radius: 0px;
+    }
+
+    .suggested {
+      border: 1px solid var(--border);
+      border-top: none;
+    }
+  }
+
+  @include screenMobile {
+    &[data-focused] {
+      margin: 0;
+      position: fixed;
+      z-index: 100000;
+      top: 0px;
+      left: 0px;
+      padding: 10px;
+      width: 100vw;
+      height: 100vh;
+      box-sizing: border-box;
+      background: rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+
+.search,
+.open {
+  display: contents;
+  > svg {
+    user-select: none;
+    min-width: 20px;
+    width: 20px;
+    height: 20px;
+    padding: 12px;
+    color: var(--text-placeholder);
+    display: block;
+    text-align: center;
+    pointer-events: none;
+  }
+}
+
+.open {
+  display: none;
+  @include screenMobile {
+    display: block;
+    top: 0px;
+    right: 0px;
+  }
+}
+
+.suggested {
+  position: absolute;
+  flex-direction: column;
+  background-color: var(--background-accent);
+  overflow: hidden;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  box-sizing: border-box;
+  display: flex;
+  margin-top: $height;
+  width: 100%;
+  user-select: none;
+
+  @include screenMobile {
+    width: calc(100% - 20px); // - padding - border
+  }
+
+  .category {
+    flex: none;
+    justify-self: end;
+    width: 100px;
+    color: var(--text-placeholder);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  > a,
+  > div {
+    flex-shrink: none;
+    cursor: pointer;
+    color: var(--text);
+    height: $height;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    height: $height;
+
+    &:hover {
+      background-color: var(--background);
+    }
+
+    &[data-hover] {
+      background-color: var(--background-accent-deep-2);
+    }
+
+    > .result {
+      margin-top: 0;
+      padding: 0px 15px 0px 0px;
+      width: 100%;
+      line-height: $height;
+      user-select: none;
+      text-overflow: ellipsis;
+      text-wrap: nowrap;
+      overflow: hidden;
+    }
+
+    > .search {
+      color: var(--text);
+    }
+  }
+}

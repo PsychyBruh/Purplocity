@@ -1,0 +1,27 @@
+---
+import Waves from "@icons/waves.svg?raw";
+import styles from "@styles/Footer.module.scss";
+import HolyText from "./HolyText.astro";
+import HolyLink from "./HolyLink.astro";
+
+const linkCSS = [styles.thing, styles.link];
+---
+
+<footer class={styles.footer}>
+  <Fragment set:html={Waves} />
+  <div class={styles.background}>
+    <div class={styles.content}>
+      <HolyLink class:list={linkCSS} href="/contact" text="Contact" />
+      <HolyLink class:list={linkCSS} href="/credits" text="Credits" />
+      <HolyLink class:list={linkCSS} href="/privacy" text="Privacy" />
+      <HolyLink class:list={linkCSS} href="/terms">
+        <HolyText class={styles.long} text="Terms of Use" />
+        <HolyText class={styles.short} text="Terms" />
+      </HolyLink>
+      <div class:list={[styles.thing]}>
+        &copy; <HolyText text="Purplocity" />
+        {new Date().getUTCFullYear()}
+      </div>
+    </div>
+  </div>
+</footer>

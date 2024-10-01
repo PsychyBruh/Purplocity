@@ -1,0 +1,263 @@
+@import "./common.scss";
+
+.themeLink {
+  color: var(--link);
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover,
+  &:hover * {
+    text-decoration: underline;
+  }
+}
+
+input.themeLink {
+  appearance: none;
+  border: none;
+  background: none;
+  font: inherit;
+  margin: none;
+}
+
+.ThemeInputBar[data-disabled],
+.ThemeInput[disabled],
+.ThemeButton[disabled] {
+  cursor: not-allowed !important;
+  background-color: var(--background-accent-disabled) !important;
+}
+
+.ThemeInputBar[data-disabled] input {
+  cursor: not-allowed !important;
+}
+
+html[data-tab] {
+  .ThemeInput,
+  .ThemeButton,
+  .ThemeInputBar input {
+    &:focus-visible {
+      outline: var(--action) solid 2px;
+    }
+  }
+
+  .ThemeInputBar > input:focus {
+    outline-offset: 2px;
+  }
+}
+
+/*.ThemeInput,
+.ThemeButton:required,
+.ThemeInputBar input:required {
+	outline: var(--error) solid 2px;
+}*/
+
+.ThemeInput {
+  width: 500px;
+  height: 44px;
+  background: var(--background-accent);
+  color: var(--text-accent);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  padding: 0px 15px;
+}
+
+.save {
+  width: min-content;
+  margin-top: 15px;
+}
+
+.ThemeInputBar {
+  height: 44px;
+  background: var(--background-accent);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+
+  input[type="text"] {
+    width: 100%;
+    height: 100%;
+    padding: 0px 15px;
+    background-color: transparent;
+    border: none;
+    border-radius: 5px;
+    z-index: 1;
+    color: var(--text);
+
+    &.thinPadLeft {
+      padding-left: 0;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    &.thinPadRight {
+      padding-right: 0;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+}
+
+.ThemeButton {
+  cursor: pointer;
+  height: 42px;
+  user-select: none;
+  font-family: inherit;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  text-wrap: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0 15px;
+
+  background-color: var(--action);
+  color: var(--action-secondary);
+
+  &:hover {
+    background-color: var(--background-accent-deep-1);
+  }
+
+  &:active {
+    background-color: var(--background-accent-deep-2);
+  }
+
+  &.block {
+    padding: 0;
+    border: none;
+    width: 42px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+
+    svg {
+      fill: var(--action-secondary);
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &.left {
+    border-right: 1px solid var(--border);
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+
+  &.right {
+    border-left: 1px solid var(--border);
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+
+  &:hover {
+    background-color: var(--action-hover);
+  }
+
+  &:active {
+    background-color: var(--action-active);
+  }
+}
+
+.ThemeSelect {
+  color: var(--text);
+  user-select: none;
+  text-align: left;
+  box-sizing: content-box;
+  max-height: 40px;
+  font-family: $Lato;
+  font-weight: normal;
+  font-size: 15px;
+
+  > .toggle {
+    display: flex;
+    height: 40px;
+    line-height: 40px;
+    padding: 0px 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background-color: var(--background-accent);
+    cursor: pointer;
+    align-items: center;
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    overflow: hidden;
+
+    > div {
+      display: contents;
+      svg {
+        margin-left: 6px;
+        width: 24px;
+        height: 24px;
+        margin-left: auto;
+        line-height: inherit;
+      }
+    }
+  }
+
+  > .list {
+    z-index: 2;
+    position: relative;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    background-color: var(--background-accent);
+
+    > div {
+      border-bottom: 1px solid var(--border);
+      height: 40px;
+      line-height: 40px;
+      // add space for toggle icon
+      // toggle icon adds 30px (width + padding)
+      // add 15 px to factor in 15px padding on both sides
+      padding: 0px calc(30px + 15px) 0px 15px;
+      cursor: pointer;
+
+      &:last-of-type {
+        border-bottom: none;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+      }
+
+      &[data-disabled] {
+        cursor: default;
+        color: var(--text-placeholder);
+      }
+
+      :hover,
+      &[data-hover] {
+        background-color: var(--background);
+        color: var(--text);
+      }
+    }
+  }
+
+  &[data-open] {
+    > .toggle {
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
+
+    > .list {
+      visibility: visible;
+    }
+  }
+}
+
+.code {
+  margin: 3px;
+  padding: 4px;
+  background-color: var(--background-accent);
+
+  // discourage copy-pasting obfuscated text
+  // /pyroxy tyrepeko:HolnyyUnblIoeckeyr
+  &.obfuscatedCode {
+    user-select: none;
+  }
+}

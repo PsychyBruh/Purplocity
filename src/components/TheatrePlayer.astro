@@ -1,0 +1,406 @@
+---
+import styles from "@styles/TheatrePlayer.module.scss";
+import MainLayout from "@layouts/MainLayout.astro";
+import type { TheatreEntry } from "@lib/TheatreAPI";
+import { dbEnabled, theatreAPI, theatreAPIMirror } from "@lib/theatre";
+import ArrowDropDown from "@icons/arrow_drop_down_24dp.svg?react";
+import ArrowDropUp from "@icons/arrow_drop_up_24dp.svg?react";
+import ArrowLeft from "@icons/arrow_left_24dp.svg?react";
+import ArrowRight from "@icons/arrow_right_24dp.svg?react";
+import ChevronLeft from "@icons/chevron_left_24dp.svg?react";
+import Close from "@icons/close_24dp.svg?react";
+import Fullscreen from "@icons/fullscreen_24dp.svg?react";
+import Panorama from "@icons/panorama_24dp.svg?react";
+import Star from "@icons/star_24dp.svg?react";
+import StarBorder from "@icons/star_outline_24dp.svg?react";
+import VideogameAsset from "@icons/videogame_asset_24dp.svg?react";
+import OpenInNew from "@icons/open_in_new_24dp.svg?react";
+import TheatreSearchBar from "@components/TheatreSearchBar.astro";
+
+let mirrorError = false;
+
+interface Props {
+  id: string; // id of game
+}
+
+let data: TheatreEntry | undefined;
+
+if (dbEnabled) {
+  data = await theatreAPI.show(Astro.props.id);
+} else
+  try {
+    data = await theatreAPIMirror.show(Astro.props.id);
+  } catch (err) {
+    mirrorError = true;
+  }
+
+// we build the controls popup with raw HTML
+let controlsHTML = "";
+
+// FOR DESIGNING NEW HANDLERS FOR CODES:
+// https://www.toptal.com/developers/keycode
+
+const renderControlKey = (keyCode: string) => {
+  if (!/^[a-z ]*$/i.test(keyCode)) {
+    console.error("Invalid keyCode:", keyCode);
+    return "";
+  }
+
+  let html: string;
+
+  switch (keyCode) {
+    case "ArrowUp":
+      html = ArrowDropUp;
+    case "ArrowLeft":
+      html = ArrowLeft;
+    case "ArrowUp":
+      html = ArrowDropDown;
+    case "ArrowUp":
+      html = ArrowRight;
+    default:
+      html = keyCode;
+  }
+
+  return `<div class="${styles.controlKey} ${styles["key" + keyCode]}">${html}</div>`;
+};
+
+if (data)
+  for (const control of data.controls) {
+    let visualsHTML = "";
+
+    for (const key of control.keys) {
+      switch (key) {
+        case "arrows":
+          visualsHTML += `<div class="${styles.move}">${["ArrowUp", "ArrowLeft", "ArrowDropDown", "ArrowRight"].map(renderControlKey).join("")}</div>`;
+          break;
+        case "wasd":
+          visualsHTML += `<div class=${styles.move}>${["W", "A", "S", "D"].map(renderControlKey)}</div>`;
+          break;
+        default:
+          // key might have an HTML injection
+          // because after all we are just using raw HTML
+          // so can we just check if it doesn't contain expected characters
+          if (/^[a-z ]*$/i.test(key)) {
+            console.error("Invalid key code:", key);
+          } else {
+            visualsHTML += `<div class="${styles.controlKey} ${styles["key" + key]}">${key}</div>`;
+          }
+          break;
+      }
+    }
+
+    let labelHTML = "";
+    if (/^[a-z: ]/i.test(control.label)) {
+      console.error("Invalid label:", control.label);
+    } else {
+      labelHTML = `<span class=${styles.label}>${control.label}</span>`;
+    }
+
+    controlsHTML +=
+      `<div class="${styles.control}}">` +
+      `<div class=${styles.visuals}>${visualsHTML}</div>` +
+      labelHTML +
+      `</div>`;
+  }
+
+if (mirrorError) {
+  // refresh after 5 seconds
+  Astro.response.headers.set("reload", "5");
+  Astro.response.status = 500;
+} else if (!data) Astro.response.status = 404;
+---
+
+<MainLayout title={data ? data.name : undefined} noFooter>
+  {
+    mirrorError ? (
+      <main>
+        <p>An error occurred while trying to access the theatre API mirror.</p>
+        <p>This page will refresh in 5 seconds.</p>
+      </main>
+    ) : data ? (
+      <>
+        {Astro.locals.isMainWebsite && (
+          <Fragment slot="head">
+            <meta
+              name="description"
+              content={`Find games like ${data.name} and many more on Purplocity.`}
+            />
+          </Fragment>
+        )}
+        <TheatreSearchBar />
+        <div class={styles.content} id="content">
+          <div class={styles.frame}>
+            <div class={styles.iframeContainer}>
+              <div
+                class={styles.iframeCover}
+                title="Click to focus"
+                id="focusOverlay"
+              />
+              <iframe id="playerFrame" title="Embed" />
+            </div>
+            <div tabindex="0" class={styles.controls} id="controlsPopup">
+              <div
+                class={styles.close}
+                id="closeControlsPopup"
+                set:html={Close}
+              />
+              <div class={styles.controls} set:html={controlsHTML} />
+            </div>
+          </div>
+          <div class={styles.title}>
+            <h3 class={styles.name}>{data.name}</h3>
+            <div class={styles.shiftRight} />
+            <div
+              class:list={[styles.button, styles.favoriteButton]}
+              id="favoriteButton"
+              title="Add to favorites"
+              set:html={Star + StarBorder}
+            />
+            {data.controls.length !== 0 && (
+              <div
+                class={styles.button}
+                tabindex="0"
+                id="openControls"
+                title="Controls"
+                set:html={VideogameAsset}
+              />
+            )}
+            <div
+              class={styles.button}
+              id="openInFullscreen"
+              title="Fullscreen mode"
+              set:html={Fullscreen}
+            />
+            <div
+              class:list={[styles.button, styles.openInNewButton]}
+              id="openInNew"
+              title="Open in new tab"
+              set:html={OpenInNew}
+            />
+            <div
+              class:list={[styles.button, styles.panoramaButton]}
+              id="panoramaButton"
+              title="Panorama mode"
+              set:html={ChevronLeft + Panorama}
+            />
+          </div>
+        </div>
+      </>
+    ) : (
+      <main>
+        <p>Invalid game ID</p>
+      </main>
+    )
+  }
+  <script
+    is:inline
+    id="gameData"
+    type="application/json"
+    set:html={JSON.stringify(data)}
+  />
+</MainLayout>
+<script>
+  import TheatreAPI from "@lib/TheatreAPI";
+  import { encryptURL } from "@lib/cryptURL";
+  import { getGlobalSettings } from "@lib/storage";
+  import { setupServiceWorker, setupBareMux } from "@lib/register-sw";
+
+  // called on page load and when fullscreen changes
+  // to fix clicks/keyboard input not going to the game
+  const setIFrameFocused = (focused: boolean) => {
+    // these are declared bc astro lifecycle
+    const playerFrame =
+      document.querySelector<HTMLIFrameElement>("#playerFrame");
+    if (playerFrame === null) return; // theatre player not loaded
+    if (focused) {
+      document.documentElement.scrollTo(0, 0);
+      document.documentElement.setAttribute("data-player-focused", "");
+      playerFrame.focus();
+    } else {
+      document.documentElement.removeAttribute("data-player-focused");
+    }
+  };
+
+  document.addEventListener("fullscreenchange", () => {
+    const playerFrame =
+      document.querySelector<HTMLIFrameElement>("#playerFrame");
+    if (typeof playerFrame === "object")
+      setIFrameFocused(document.fullscreenElement === playerFrame);
+  });
+
+  document.addEventListener("astro:page-load", () => {
+    const dataElement = document.querySelector<HTMLScriptElement>("#gameData");
+    if (dataElement === null) return;
+    const data = JSON.parse(dataElement.textContent!);
+    const content = document.querySelector("#content")!;
+
+    setIFrameFocused(true);
+
+    const playerFrame =
+      document.querySelector<HTMLIFrameElement>("#playerFrame")!;
+    const focusOverlay =
+      document.querySelector<HTMLDivElement>("#focusOverlay")!;
+    focusOverlay.addEventListener("click", () => {
+      setIFrameFocused(true);
+    });
+
+    const openInFullscreen =
+      document.querySelector<HTMLDivElement>("#openInFullscreen")!;
+
+    openInFullscreen.addEventListener("click", () => {
+      playerFrame.requestFullscreen();
+    });
+
+    let url = data.src;
+
+    // if it starts with "./" then its pulling the file from our cdn
+    if (url.startsWith("./")) {
+      // make it an absolute URL to our cdn
+      // absolute is needed for webretro
+      url = location.origin + "/cdn/" + url.slice(2);
+    }
+
+    window.addEventListener("keydown", (event) => {
+      if (event.target === null || !(event.target instanceof HTMLInputElement))
+        playerFrame.contentWindow?.focus();
+    });
+
+    playerFrame.addEventListener("focus", () => {
+      setIFrameFocused(true);
+    });
+
+    playerFrame.addEventListener("load", () => {
+      playerFrame.contentWindow!.addEventListener("click", () => {
+        // handle closing
+        setInputFocused(false);
+      });
+    });
+
+    switch (data.type) {
+      case "proxy":
+        setupServiceWorker().then(async () => {
+          try {
+            await setupBareMux();
+          } catch (err) {
+            console.error(err);
+          }
+          playerFrame.src = __uv$config!.prefix + __uv$config.encodeUrl!(url);
+        });
+        break;
+      case "embed":
+        playerFrame.src = url;
+        break;
+      case "flash":
+        playerFrame.src = `/flash#${encryptURL(url)}`;
+        break;
+      case "emulator":
+      case "emulator.gba":
+      case "emulator.nes":
+      case "emulator.n64":
+      case "emulator.genesis":
+        playerFrame.src =
+          "/cdn/html5/webretro/?" +
+          new URLSearchParams({
+            rom: url,
+            core: "autodetect",
+          });
+        break;
+      default:
+        throw new TypeError(`Unrecognized theatre entry type: ${data.type}`);
+    }
+
+    const api = new TheatreAPI("/api/theatre/");
+    const globalSettings = getGlobalSettings();
+
+    const seenGames = globalSettings.get("seenGames");
+
+    if (!seenGames.includes(data.id)) {
+      seenGames.push(data.id);
+      globalSettings.set("seenGames", seenGames);
+      api.plays(data.id).catch((err) => {
+        console.error("Couldn't count play");
+        console.error(err);
+      });
+    }
+
+    // buttons/controls popup
+    if (data.controls.length !== 0) {
+      let controlsExpanded = false;
+      const setControlsExpanded = (newVal: boolean) => {
+        controlsExpanded = newVal;
+        if (controlsExpanded)
+          content.setAttribute("data-controls-expanded", "");
+        else content.removeAttribute("data-controls-expanded");
+      };
+      // make sure controls-expanded isn't leftover from a previous page load
+      setControlsExpanded(false);
+
+      const controlsPopup =
+        document.querySelector<HTMLDivElement>("#controlsPopup")!;
+
+      const openControls =
+        document.querySelector<HTMLDivElement>("#openControls")!;
+      openControls.addEventListener("click", () => {
+        setControlsExpanded(!controlsExpanded);
+        controlsPopup.focus();
+      });
+
+      const closeControlsPopup = document.querySelector<HTMLDivElement>(
+        "#closeControlsPopup"
+      )!;
+      closeControlsPopup.addEventListener("click", () => {
+        setControlsExpanded(false);
+      });
+
+      controlsPopup.addEventListener("blur", (event) => {
+        if (
+          !(event.target as HTMLDivElement).contains(
+            event.relatedTarget as Node
+          ) &&
+          !openControls.contains(event.relatedTarget as Node)
+        )
+          setControlsExpanded(false);
+      });
+    }
+
+    let favorited = false;
+    const setFavorited = (newVal: boolean) => {
+      favorited = newVal;
+      if (favorited) content.setAttribute("data-favorited", "");
+      else content.removeAttribute("data-favorited");
+    };
+    setFavorited(globalSettings.get("favorites").includes(data.id));
+
+    const favoriteButton =
+      document.querySelector<HTMLDivElement>("#favoriteButton")!;
+    favoriteButton.addEventListener("click", () => {
+      const favorites = globalSettings.get("favorites");
+      // if already favorited, remove from favorites
+      const i = favorites.indexOf(data.id);
+      if (i === -1) favorites.push(data.id);
+      else favorites.splice(i, 1);
+
+      globalSettings.set("favorites", favorites);
+      setFavorited(!favorited);
+    });
+
+    const openInNew = document.querySelector<HTMLDivElement>("#openInNew")!;
+    openInNew.addEventListener("click", () => {
+      window.open(playerFrame.contentWindow!.location.href);
+    });
+
+    let panorama = false;
+    const setPanorama = (newVal: boolean) => {
+      panorama = newVal;
+      if (panorama) content.setAttribute("data-panorama", "");
+      else content.removeAttribute("data-panorama");
+    };
+    setPanorama(false);
+
+    const panoramaButton =
+      document.querySelector<HTMLDivElement>("#panoramaButton")!;
+    panoramaButton.addEventListener("click", () => {
+      setPanorama(!panorama);
+    });
+  });
+</script>

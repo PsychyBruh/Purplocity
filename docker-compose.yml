@@ -1,0 +1,17 @@
+services:
+  purplocity:
+    image: holywebwork/website2
+    container_name: purplocity
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - purplocity-config:/app/config
+
+volumes:
+  purplocity-config:
+    name: purplocity-config
+
+networks:
+  default:
+    name: purplocity

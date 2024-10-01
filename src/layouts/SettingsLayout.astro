@@ -1,0 +1,46 @@
+---
+import MainLayout from "@layouts/MainLayout.astro";
+import styles from "@styles/Settings.module.scss";
+import Brush from "@icons/brush_24dp.svg?react";
+import BrushOutlined from "@icons/brush_24dp_outline.svg?react";
+import DriveFileRenameOutline from "@icons/drive_file_rename_outline_24dp.svg?react";
+import Public from "@icons/public_24dp.svg?react";
+import SettingsMenuTab from "@components/SettingsMenuTab.astro";
+
+interface Props {
+  title?: string;
+}
+
+const { title } = Astro.props;
+---
+
+<MainLayout title={title}>
+  <main class={styles.main}>
+    <div class={styles.menu} transition:persist>
+      <SettingsMenuTab
+        href="/settings/"
+        name="General"
+        iconFilled={Brush}
+        iconOutlined={BrushOutlined}
+      />
+      <SettingsMenuTab href="/settings/uv" name="Proxy" iconFilled={Public} />
+      <SettingsMenuTab
+        href="/settings/tabcloak"
+        name="Tab Cloak"
+        iconFilled={DriveFileRenameOutline}
+      />
+    </div>
+    <slot />
+  </main>
+</MainLayout>
+<script>
+  document.addEventListener("astro:page-load", () => {
+    for (const setting of document.querySelectorAll<HTMLAnchorElement>(
+      "a[data-settings]"
+    )) {
+      if (new URL(setting.href).pathname === location.pathname)
+        setting.setAttribute("data-selected", "");
+      else setting.removeAttribute("data-selected");
+    }
+  });
+</script>

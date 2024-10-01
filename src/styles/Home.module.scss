@@ -1,0 +1,169 @@
+@use "sass:map";
+@import "./common.scss";
+@import "./nord.scss";
+@import "@fontsource/catamaran";
+
+$homeNight: (
+  home-pretty: #bfd1f3,
+  home-start: #576178,
+);
+
+$homeDay: (
+  home-pretty: #6781b3,
+  home-start: #9fb3c8,
+);
+
+@mixin homeThemeRules($theme, $contrast) {
+  --home-pretty: #{map.get($theme, "home-pretty")};
+  --home-start: #{map.get($theme, "home-start")};
+  --home-start-hover: #{offsetHex(map.get($theme, "home-start"), -10)};
+  --home-start-active: #{offsetHex(map.get($theme, "home-start"), -20)};
+}
+
+html {
+  @media (prefers-color-scheme: light) {
+    @include homeThemeRules($homeDay, $homeNight);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    @include homeThemeRules($homeNight, $homeDay);
+  }
+
+  &[data-theme="day"] {
+    @include homeThemeRules($homeDay, $homeNight);
+  }
+
+  &[data-theme="night"] {
+    @include homeThemeRules($homeNight, $homeDay);
+  }
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px;
+
+  > h1 {
+    margin: 0px 0px 10px 0px;
+  }
+
+  > h2 {
+    margin: 0px 0px 20px 0px;
+  }
+}
+
+.focus {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  height: 64px;
+  max-width: 600px;
+  margin: 0 auto;
+
+  .button {
+    background-color: var(--home-start);
+    color: var(--text);
+    font-weight: 600;
+    height: 44px;
+
+    &:hover {
+      background-color: var(--home-start-hover);
+    }
+
+    &:active {
+      background-color: var(--home-start-active);
+    }
+
+    @include screenMobile {
+      display: none;
+    }
+  }
+}
+
+.title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 9vh;
+  font-family: "Catamaran", sans-serif;
+  text-align: center;
+
+  .big {
+    display: inline;
+    font-size: 53px;
+    line-height: 40px;
+    word-spacing: 3px;
+    font-weight: 500;
+    margin-bottom: 55px;
+    white-space: nowrap;
+    text-align: center;
+
+    @include screenMobile {
+      white-space: wrap;
+      // line-height: 50px;
+    }
+  }
+
+  .small {
+    position: absolute;
+    bottom: 5px;
+    font-size: 21px;
+    margin-top: 5px;
+    margin-left: 3px;
+    // don't center it
+    margin-right: auto;
+    left: 0;
+
+    @include screenMobile {
+      bottom: 0;
+      position: relative;
+      margin: 0 auto;
+    }
+  }
+
+  .small,
+  .pretty {
+    color: var(--home-pretty);
+  }
+
+  .pretty {
+    top: 3px;
+    position: relative;
+
+    .prettyUnderline {
+      display: contents;
+
+      > svg {
+        position: absolute;
+        top: calc(100% - 23px);
+        left: 0px;
+        width: 100%;
+      }
+    }
+  }
+}
+
+.poweredBy {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  color: var(--text-disabled);
+  user-select: none;
+  cursor: pointer;
+
+  svg {
+    margin-right: 1px;
+    width: 25px;
+    height: 25px;
+  }
+}
+
+.nag {
+  margin-bottom: 10px;
+  text-align: center;
+}

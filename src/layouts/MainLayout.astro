@@ -1,0 +1,280 @@
+---
+import "@fontsource/lato";
+import "@fontsource/lato/700.css";
+import "@fontsource/montserrat-alternates";
+import "@styles/root.scss";
+import "@styles/theme.scss";
+import HatBeta from "@icons/hat-beta.svg?react";
+import HatDev from "@icons/hat-dev.svg?react";
+import HatPlain from "@icons/hat.svg?react";
+import { gameCategories } from "@lib/gameCategories";
+import styles from "@styles/Navigation.module.scss";
+import MenuIcon from "@icons/menu_24dp.svg?react";
+import GitHub from "@icons/github.svg?react";
+import Settings from "@icons/settings_24dp.svg?react";
+import HomeOutlined from "@icons/home_24dp_outlined.svg?react";
+import Home from "@icons/home_24dp.svg?react";
+import UltravioletIcon from "@icons/ultraviolet_icon.svg?react";
+import Patreon from "@icons/patreon.svg?react";
+import ChatBot from "@icons/chatbot.svg?react";
+import QuestionMark from "@icons/question_mark_24dp.svg?react";
+import Apps from "@icons/apps_24dp.svg?react";
+import StarOutline from "@icons/star_outline_24dp.svg?react";
+import DeviceHub from "@icons/device_hub_24dp_FILL0_wght400_GRAD0_opsz24.svg?react";
+import Star from "@icons/star_24dp.svg?react";
+import List from "@icons/list_24dp.svg?react";
+import luv from "@icons/favorite_24dp.svg?react";
+import Leaderboard from "@icons/leaderboard_24dp_FILL1_wght400_GRAD0_opsz24.svg?react";
+import SortRounded from "@icons/sort_24dp.svg?react";
+import NavMenuTab from "@components/NavMenuTab.astro";
+import Footer from "@components/Footer.astro";
+import { accountsEnabled } from "@config/apis";
+import { ViewTransitions } from "astro:transitions";
+import { appConfig } from "@config/config";
+import UltravioletScripts from "@components/UltravioletScripts.astro";
+import EncryptionKey from "@components/EncryptionKey.astro";
+import HolyText from "@components/HolyText.astro";
+import HolyLink from "@components/HolyLink.astro";
+
+function Hat() {
+  switch (appConfig.hatBadge) {
+    case "normal":
+      return HatPlain;
+    case "beta":
+      return HatBeta;
+    case "dev":
+    default:
+      return HatDev;
+  }
+}
+
+interface Props {
+  title?: string;
+  noFooter?: boolean;
+}
+
+const { cloak } = Astro.locals;
+---
+
+<html lang="en" data-theme={Astro.locals.theme}>
+  <head>
+    <meta charset="utf-8" />
+    {
+      (cloak && <title set:text={cloak.title} />) ||
+        (typeof Astro.props.title === "string" && (
+          <title set:text={Astro.props.title} />
+        ))
+    }
+    <link
+      rel="shortcut icon"
+      href={cloak
+        ? cloak.icon === ""
+          ? "data:,"
+          : "/api/cloakicon?" + encodeURIComponent(cloak.icon)
+        : "/h.ico"}
+    />
+    <meta name="viewport" content="width=device-width" />
+    <slot name="head" />
+    <meta
+      name="theme-color"
+      content={Astro.locals.theme === "day" ? "#d8dee9" : "#2e3440"}
+    />
+    {
+      Astro.locals.isMainWebsite ? (
+        <>
+          <link rel="manifest" href="/manifest.json" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="og:image" content="/tnbanner.jpg" />
+          <link rel="sitemap" href="/sitemap-index.xml" />
+        </>
+      ) : (
+        <>
+          <meta name="robots" content="noindex" />
+        </>
+      )
+    }
+    <ViewTransitions />
+  </head>
+  <body>
+    <EncryptionKey />
+    <nav class={styles.nav} tabindex="0" transition:persist>
+      <div
+        class:list={[styles.button, styles.center]}
+        set:html={MenuIcon}
+        onclick="setNavExpanded(true)"
+      />
+      <a
+        href="/"
+        class:list={[styles.entry, styles.logo]}
+        title="Home"
+        set:html={Hat()}
+      />
+      <HolyLink
+        href="/"
+        class={styles.title}
+        tabindex="-1"
+        text="Purplocity"
+      />
+      <div class={styles.shiftRight}></div>
+      <HolyLink
+        href={appConfig.links.github.holyunblocker}
+        title="GitHub"
+        class:list={[styles.button, styles.git]}
+        set:html={GitHub}
+      />
+
+      <a
+        href="/settings/"
+        title="Settings"
+        class:list={[styles.button, styles.center]}
+        set:html={Settings}
+      />
+    </nav>
+    <div class={styles.content}>
+      <div tabindex="-1" class={styles.cover} onclick="setNavExpanded(false)">
+      </div>
+      <div class={styles.menu}>
+        <div class={styles.top}>
+          <div
+            class:list={[styles.button, styles.center]}
+            set:html={MenuIcon}
+            onclick="setNavExpanded(false)"
+          />
+          <div
+            class:list={[styles.entry, styles.logo]}
+            title="Home"
+            set:html={Hat()}
+            onclick="setNavExpanded(false)"
+          />
+          <div
+            class={styles.title}
+            tabindex="-1"
+            onclick="setNavExpanded(false)"
+          >
+            <HolyText text="Purplocity" />
+          </div>
+        </div>
+        <div class={styles.menuList}>
+          <NavMenuTab
+            href="/"
+            name="Home"
+            iconFilled={Home}
+            iconOutlined={HomeOutlined}
+          />
+          <NavMenuTab
+            href="/uv"
+            name="Ultraviolet"
+            iconFilled={UltravioletIcon}
+          />
+          <NavMenuTab href="/faq" name="FAQ" iconFilled={QuestionMark} />
+          <NavMenuTab
+            href={appConfig.links.patreon.holyunblocker}
+            name="Patreon"
+            iconFilled={Patreon}
+          />
+          {
+            accountsEnabled && (
+              <>
+                <div class={styles.bar} />
+                <NavMenuTab href="/pro/" name="Subscribe" iconFilled={luv} />
+                <NavMenuTab
+                  href="/pro/vm"
+                  name="Virtual Browser"
+                  iconFilled={DeviceHub}
+                />
+                <NavMenuTab
+                  href="/pro/ai"
+                  name="Chat Bot"
+                  iconFilled={ChatBot}
+                />
+                <NavMenuTab
+                  href="/pro/tiers"
+                  name="Pricing"
+                  iconFilled={Leaderboard}
+                />
+
+                <div class={styles.bar} />
+              </>
+            )
+          }
+
+          <NavMenuTab href="/hub/apps" name="Apps" iconFilled={Apps} />
+
+          <NavMenuTab
+            href="/hub/favorites"
+            name="Favorites"
+            iconFilled={Star}
+            iconOutlined={StarOutline}
+          />
+
+          <div class={styles.bar}></div>
+
+          <div class={styles.title}><HolyText text="Arcade" /></div>
+
+          <NavMenuTab href="/hub/" name="Popular" iconFilled={SortRounded} />
+          <NavMenuTab href="/hub/all" name="All" iconFilled={List} />
+          <div class={styles.title}><HolyText text="Genre" /></div>
+          <div class={styles.genres}>
+            {
+              gameCategories.map((category) => (
+                <HolyLink
+                  href={`/hub/${category.id}`}
+                  title={category.name}
+                  class:list={[styles.entry, styles.text]}
+                  text={category.name}
+                />
+              ))
+            }
+          </div>
+        </div>
+      </div>
+      <slot />
+      {!Astro.props.noFooter && <Footer transition:persist />}
+    </div>
+    <script>
+      import { setTheme } from "@lib/cookies";
+
+      // set the initial theme to the user's preference
+      if (!document.cookie.includes("theme=")) {
+        const preference = window.matchMedia("(prefers-color-scheme: dark)")
+          .matches
+          ? "night"
+          : "day";
+        setTheme(preference);
+      }
+
+      window.setNavExpanded = (expanded) => {
+        if (expanded)
+          document.documentElement.setAttribute("data-expanded", "");
+        else document.documentElement.removeAttribute("data-expanded");
+      };
+
+      function getNavExpanded() {
+        return document.documentElement.dataset.expanded === "1";
+      }
+
+      function keydown(event: KeyboardEvent) {
+        if (getNavExpanded() && event.key === "Escape") {
+          setNavExpanded(false);
+        }
+      }
+
+      document.addEventListener("keydown", keydown);
+
+      for (const nav of document.querySelectorAll<HTMLAnchorElement>(
+        "[data-nav]"
+      ))
+        nav.addEventListener("click", () => setNavExpanded(false));
+
+      document.addEventListener("astro:page-load", () => {
+        for (const setting of document.querySelectorAll<HTMLAnchorElement>(
+          "a[data-nav]"
+        ))
+          if (new URL(setting.href).pathname === location.pathname)
+            setting.setAttribute("data-selected", "");
+          else setting.removeAttribute("data-selected");
+      });
+    </script>
+    <UltravioletScripts />
+  </body>
+</html>

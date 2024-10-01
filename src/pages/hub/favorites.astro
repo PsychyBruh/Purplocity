@@ -1,0 +1,60 @@
+---
+import styles from "@styles/TheatreCategory.module.scss";
+import MainLayout from "@layouts/MainLayout.astro";
+import TheatreSearchBar from "@components/TheatreSearchBar.astro";
+---
+
+<MainLayout title="Favorites">
+  <TheatreSearchBar />
+  <main class={styles.main}>
+    <h1 class="page-title sub">Favorites</h1>
+    <div class={styles.items} id="favoriteItems"></div>
+  </main>
+</MainLayout>
+<script>
+  import { getClientTheatreAPI, renderTheatreItem } from "@lib/renderTheatre";
+  import { getGlobalSettings } from "@lib/storage";
+
+  const theatreAPI = getClientTheatreAPI();
+  const globalSettings = getGlobalSettings();
+
+  document.addEventListener("astro:page-load", () => {
+    const items = document.querySelector<HTMLDivElement>("#favoriteItems");
+    if (items === null) return;
+    const main = document.querySelector<HTMLDivElement>("main")!;
+    const favorites = globalSettings.get("favorites");
+
+    if (favorites.length === 0) {
+      items.style.display = "none";
+      const p = document.createElement("p");
+      p.textContent = "Once you favorite some games, they will appear here.";
+      main.append(p);
+      return;
+    }
+    items.style.display = "";
+
+    for (let i = 0; i < favorites.length; i++)
+      items.append(renderTheatreItem());
+
+    theatreAPI
+      .list({
+        ids: favorites,
+      })
+      .then((data) => {
+        items.innerHTML = "";
+
+        for (const id of favorites) {
+          if (!data.entries.some((e) => e.id === id)) {
+            console.log(
+              "could not find entry id",
+              id,
+              "in result, assuming it was deleted"
+            );
+            favorites.splice(favorites.indexOf(id), 1);
+          }
+        }
+
+        for (const item of data.entries) items.append(renderTheatreItem(item));
+      });
+  });
+</script>

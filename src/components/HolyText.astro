@@ -1,0 +1,39 @@
+---
+type Props = astroHTML.JSX.IntrinsicElements["div"] & {
+  text: string;
+};
+
+const { text, ...props } = Astro.props;
+---
+
+{
+  Astro.locals.isMainWebsite ? (
+    <span {...props} set:text={text} />
+  ) : (
+    <span
+      {...props}
+      data-ectext={await Astro.locals.encryptText(text)}
+      set:text={text.split("").map((e) => (e === " " ? e : "-"))}
+    />
+  )
+}
+<script>
+  import { holyDecrypt } from "@lib/holyDecrypt";
+
+  const parseText = () => {
+    if (navigator.webdriver) return;
+
+    for (const t of document.querySelectorAll<HTMLSpanElement>(
+      "[data-ectext]"
+    )) {
+      const ectext = t.getAttribute("data-ectext")!;
+      t.removeAttribute("data-ectext");
+      const text = holyDecrypt(ectext);
+      const root = t.attachShadow({ mode: "closed" });
+      root.append(text);
+    }
+  };
+
+  parseText();
+  document.addEventListener("astro:page-load", parseText);
+</script>

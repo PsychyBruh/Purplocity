@@ -1,0 +1,184 @@
+---
+// this page will only be reached if the user is signed in
+// this is a dashboard
+// they can edit their profile, subscribe, check their subscription status and cancel it
+import styles from "@styles/Subscriber.module.scss";
+import MainLayout from "@layouts/MainLayout.astro";
+import themeStyles from "@styles/ThemeElements.module.scss";
+import Banner from "@components/Banner.astro";
+import Delete from "@icons/delete_24dp_FILL1_wght400_GRAD0_opsz24.svg?react";
+import { appConfig } from "@config/config";
+import { giveTierDiscordRoles } from "@config/apis";
+import { unlinkDiscord } from "@lib/util";
+import prettyMilliseconds from "pretty-ms";
+import HolyLink from "@components/HolyLink.astro";
+import HolyText from "@components/HolyText.astro";
+
+const { user, acc } = Astro.locals;
+if (await acc.isBanned()) return acc.toBan();
+if (acc.needsToVerifyTotp()) return acc.toVerifyTotp();
+if (!user) return acc.toLogin();
+if (!user.email_verified) return acc.toVerifyEmail();
+
+let error: string | undefined;
+let success: string | undefined;
+
+const newEmailConfirmed = Astro.url.searchParams.has("newEmailConfirmed");
+const welcome = Astro.url.searchParams.has("welcome");
+const discordConnected = Astro.url.searchParams.has("disc_connected");
+const discordNotInGuild = Astro.url.searchParams.has("disc_guild");
+
+if (Astro.request.method === "POST")
+  try {
+    const data = await Astro.request.formData();
+    const type = data.get("type")?.toString();
+
+    switch (type) {
+      case "unlink-discord":
+        if (user.discord_id === null) {
+          error = "You don't have a Discord linked.";
+          Astro.response.status = 400;
+        } else {
+          // take away their roles
+          await giveTierDiscordRoles(user);
+          await unlinkDiscord(user);
+          success = "Discord account unlinked.";
+        }
+        break;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+---
+
+{
+  (newEmailConfirmed ||
+    welcome ||
+    discordConnected ||
+    discordNotInGuild ||
+    Astro.request.method === "POST") && (
+    <script>history.pushState({}, "", "/pro/dashboard")</script>
+  )
+}
+<MainLayout>
+  <main class={styles.subscriberMain}>
+    <h1 class="page-title">Dashboard for {user.email}</h1>
+    {newEmailConfirmed && <Banner success="Email changed." />}
+    {welcome && <Banner success="Email verified." />}
+    {
+      discordNotInGuild && (
+        <p class="prettyBanner" data-error>
+          <HolyText text="We couldn't find your Discord account in our server. " />
+          <u>
+            <HolyLink
+              href={appConfig.links.discord.holyunblocker}
+              text="Click here to join."
+            />
+          </u>
+        </p>
+      )
+    }
+    {discordConnected && <Banner success="Account connected." />}
+    <Banner success={success} error={error} />
+    <div class={styles.userCard}>
+      <h3>Account Actions:</h3>
+      <p>
+        <a class={themeStyles.themeLink} href="/pro/change-password"
+          >Change Password</a
+        >
+      </p>
+      <p>
+        <a class={themeStyles.themeLink} href="/pro/change-email"
+          >Change Email</a
+        >
+      </p>
+      <p>
+        <a
+          class={themeStyles.themeLink}
+          href="/pro/totp"
+          data-astro-prefetch="false">Manage 2FA</a
+        >
+      </p>
+      <p>
+        <a
+          class={themeStyles.themeLink}
+          href="/pro/logout"
+          data-astro-prefetch="false">Log Out</a
+        >
+      </p>
+    </div>
+    <div class={styles.userCard} style="padding-bottom:10px;">
+      <h3>Subscription</h3>
+      <p>
+        Time left: {
+          acc.isPremium() ? (
+            <span
+              set:text={prettyMilliseconds(
+                user.paid_until.getTime() - Date.now()
+              )}
+              data-paid-until={user.paid_until.getTime()}
+            />
+          ) : (
+            "Expired"
+          )
+        }
+      </p>
+      <HolyLink href="/pro/tiers">
+        <button class={styles.prettySubmit}> Add more time</button>
+      </HolyLink>
+    </div>
+    <div class={styles.userCard} style="padding-bottom:10px;">
+      <h3>Connected Accounts</h3>
+      <p>Once you connect an account, it will show up here.</p>
+      <div class={styles.userConnection}>
+        <span class={styles.serviceName}>Discord:</span>
+        {
+          user.discord_id === null ? (
+            <HolyLink
+              href={`https://discord.com/oauth2/authorize?client_id=${appConfig.discord!.clientId}&response_type=code&redirect_uri=${encodeURIComponent(appConfig.discord!.clientRedirectURI)}&scope=identify`}
+            >
+              <button class={styles.prettySubmit}>Connect Discord</button>
+            </HolyLink>
+          ) : (
+            <>
+              <span class={styles.details}>
+                <img
+                  src={`https://cdn.discordapp.com/avatars/${user.discord_id}/${user.discord_avatar}.png`}
+                  class={styles.avatar}
+                />
+                <span set:text={user.discord_name} class={styles.username} />
+              </span>
+              <form class={styles.delete} method="post">
+                <input type="text" name="type" value="unlink-discord" hidden />
+                <button set:html={Delete} />
+              </form>
+            </>
+          )
+        }
+      </div>
+    </div>
+  </main>
+
+  <script>
+    import prettyMilliseconds from "pretty-ms";
+
+    document.addEventListener("astro:page-load", () => {
+      // REAL TIME COUNTDOWN
+      const countdown =
+        document.querySelector<HTMLSpanElement>("[data-paid-until]");
+      if (!countdown) return;
+
+      const paid_until = Number(countdown.getAttribute("data-paid-until")!);
+      const callback = () => {
+        const expires = paid_until - Date.now();
+        if (expires <= 0) {
+          alert("TIME'S UP.");
+          location.reload();
+          clearInterval(i);
+        }
+        countdown.textContent = prettyMilliseconds(expires);
+      };
+      const i = setInterval(callback, 1);
+    });
+  </script>
+</MainLayout>
