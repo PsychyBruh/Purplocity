@@ -10,6 +10,6 @@
       "@config/*": ["config/*"]
     }
   },
-  "extends": "astro/tsconfigs/strict",
+  "extends": "astro/tsconfigs/strict", // Ensure this is valid
   "exclude": ["dist", "public"]
 }

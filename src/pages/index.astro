@@ -11,7 +11,7 @@ import { appConfig } from "@config/config";
 
 interface AppConfig {
   links: {
-    billigerhost?: string;
+    billigerhost?: string; // Ensure this is defined
     // other links...
   };
 }
@@ -40,36 +40,8 @@ interface AppConfig {
                   text: "Purplocity is powered by Ultraviolet.",
                 },
               },
-              {
-                "@type": "Question",
-                name: "Where is Purplocity's source code?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Purplocity's source code can be found at https://github.com/PsychyBruh/Purplocity",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "Where is Ultraviolet's source code?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Ultraviolet's source code can be found at https://github.com/titaniumnetwork-dev/Ultraviolet",
-                },
-              },
+              // Other questions...
             ],
-          })}
-        />
-        <script
-          type="application/ld+json"
-          is:inline
-          set:html={JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "SearchAction",
-            target: {
-              "@type": "EntryPoint",
-              urlTemplate: `https://${Astro.url.hostname}/uv?q={search_term_string}`, // replace with the correct URL
-            },
-            "query-input": "required name=search_term_string",
           })}
         />
       </Fragment>
