@@ -20,7 +20,7 @@ export const GET: APIRoute = ({ locals }) => {
           type: "image/vnd.microsoft.icon",
         },
         {
-          src: "/favicon.svg",
+          src: "/favicon.png",
           sizes: "any",
           type: "image/svg+xml",
         },
@@ -36,7 +36,7 @@ export const GET: APIRoute = ({ locals }) => {
           purpose: "maskable",
         },
         {
-          src: "/favicon-mask.svg",
+          src: "/favicon-mask.png",
           sizes: "any",
           type: "image/svg+xml",
           purpose: "maskable",
