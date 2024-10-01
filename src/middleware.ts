@@ -138,7 +138,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   };
 
   // pick a random cloak on the first load
-  // don't run this on Purplocityofficial.net so we get SEO
+  // don't run this on holyubofficial.net so we get SEO
   if (
     !context.cookies.has("autoCloak") &&
     !context.locals.isMainWebsite &&

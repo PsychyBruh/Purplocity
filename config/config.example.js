@@ -1,8 +1,8 @@
 // This config is only loaded on the serverside and should never be used on the client.
 
 // Example configuration:
-// - no local db operations, mirrors Purplocityofficial.net for game database
-// - not hosting theatre files locally, mirrors Purplocityofficial.net for thumbnails and game files
+// - no local db operations, mirrors holyubofficial.net for game database
+// - not hosting theatre files locally, mirrors holyubofficial.net for thumbnails and game files
 // - hosts wisp-server-node
 
 /**
@@ -24,9 +24,9 @@ export const appConfig = {
 
   // specifies a mirror for the theatre api
   // this mirror is used if there are no database credentials
-  theatreApiMirror: "https://Purplocityofficial.net/api/theatre/",
+  theatreApiMirror: "https://holyubofficial.net/api/theatre/",
   // specifies a Purplocity theatre mirror
-  theatreFilesMirror: "https://Purplocityofficial.net/cdn/",
+  theatreFilesMirror: "https://holyubofficial.net/cdn/",
 
   // specifies the path to where theatre files are hosted.
   // If not specified, it will proxy the mirror
@@ -34,7 +34,7 @@ export const appConfig = {
 
   // wisp server url
   // If not specified, it will host wisp locally on /api/wisp
-  // Purplocityofficial.net hosts wisp on the `api.` subdomain
+  // holyubofficial.net hosts wisp on the `api.` subdomain
   // string vars are calculated on the client-side, not by astro!!
   // - %{ws} - `ws:` or `wss:` depending on whether the location is http: or https:
   // - %{host} - the website host with the port appended, eg `127.0.0.1:4321`
@@ -44,7 +44,7 @@ export const appConfig = {
 
   // SUPPORT EMAIL
   // shown on /contact
-  //supportEmail: "support@Purplocityofficial.net",
+  //supportEmail: "support@holyubofficial.net",
 
   // a link to the main Purplocity website
   // - is a hostname, doesn't include the port
@@ -52,7 +52,7 @@ export const appConfig = {
   // - used to not automatically set a cloak
   // - used to determine if metadata should be inserted
   // - used to determine if x-robots-tag should be set
-  mainWebsite: "Purplocityofficial.net",
+  mainWebsite: "holyubofficial.net",
 
   // POSTGRES DATABASE CONFIG
   // if no credentials are specified, it will proxy the mirror
@@ -110,7 +110,7 @@ export const appConfig = {
   //  botToken: "DISCORD BOT TOKEN HERE",
   //  clientId: "OAUTH CLIENT ID",
   //  clientSecret: "OAUTH CLIENT SECRET",
-  //  clientRedirectURI: "https://Purplocityofficial.net/pro/linkdiscord",
+  //  clientRedirectURI: "https://holyubofficial.net/pro/linkdiscord",
   //  guildId: "1263780452356063273", // Purplocity's discord server
   //  roleIds: {
   //    premium: "1264613836040835093", // premium subscribers
@@ -138,11 +138,11 @@ export const appConfig = {
   //  },
   // people can contact us via our support email
   //  sender: {
-  //    address: "support@Purplocityofficial.net",
+  //    address: "support@holyubofficial.net",
   //    name: "Purplocity Team",
   //  },
   //  // email to send verifications from
-  //  noreply: "noreply@Purplocityofficial.net",
+  //  noreply: "noreply@holyubofficial.net",
   //},
 
   // general website links
