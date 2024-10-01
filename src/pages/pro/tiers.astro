@@ -18,28 +18,21 @@ const { user } = Astro.locals;
 
 let error: string | undefined;
 
-if (Astro.request.method === "POST")
+if (Astro.request.method === "POST") {
   try {
-    // const data = await Astro.request.formData();
-
     if (!user) {
       Astro.response.status = 400;
       error = "You need an account";
-    } else if (!error)
-      try {
-        // create the invoice and redirect
-
-        const invoice = await createInvoice(user, MONTH, 500);
-
-        return Astro.redirect(`/pro/invoices/${invoice.id}`, 307);
-      } catch (err) {
-        console.error("STRIPE ERROR", err);
-        Astro.response.status = 500;
-        error = "We were unable to create an invoice!";
-      }
+    } else {
+      const invoice = await createInvoice(user, MONTH, 500);
+      return Astro.redirect(`/pro/invoices/${invoice.id}`, 307);
+    }
   } catch (err) {
-    console.error(err);
+    console.error("STRIPE ERROR", err);
+    Astro.response.status = 500;
+    error = "We were unable to create an invoice!";
   }
+}
 
 const isPoor = Astro.url.searchParams.has("poor");
 
@@ -60,7 +53,8 @@ if (!error && isPoor) {
             set:html={ArrowBackIcon}
           />
         )
-      }<HolyText text="Tiers" />
+      }
+      <HolyText text="Tiers" />
     </div>
     <Banner error={error} />
     <div class={styles.tierList}>
@@ -147,17 +141,8 @@ if (!error && isPoor) {
         /><HolyText text=" and " /><HolyLink
           href="https://nowpayments.io/doc/privacy-policy.pdf"
           class={themeStyles.themeLink}
-          text="NOWPayments"
-        /><HolyText text=" for payment processing." />
-      </p>
-      <p>
-        <HolyText text="If we suspect that you're violating our " />
-        <HolyLink
-          href="/terms"
-          class={themeStyles.themeLink}
-          text="Terms of Service"
-        />
-        , we will completely refund your payment and ban your account.
+          text="NowPayments"
+        /><HolyText text=" for secure payments." />
       </p>
     </div>
   </main>
