@@ -36,6 +36,23 @@ import HolyLink from "@components/HolyLink.astro";
 
     <section>
       <h1>
+        <HolyText text="How do I get more links?" />
+      </h1>
+      <p>
+        <HolyText text="You can join the " />
+        <HolyLink
+          href={appConfig.links.discord.holyunblocker}
+          text="Purplocity Discord Server"
+          class={themeStyles.themeLink}
+        />
+        <HolyText
+          text=" to receive more links. In any channel, enter /proxy and select Purplocity."
+        />
+      </p>
+    </section>
+
+    <section>
+      <h1>
         <HolyText text="The proxy is slow." />
       </h1>
     </section>

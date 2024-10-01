@@ -157,5 +157,9 @@ export const appConfig = {
       // used in the contact page and navbar
       holyunblocker: "https://github.com/PsychyBruh/Purplocity",
     },
+    discord: {
+      titaniumnetwork: "https://discord.gg/unblock",
+      holyunblocker: "https://discord.gg/VZguJSmMcN",
+    },
   },
 };
