@@ -149,9 +149,6 @@ export const appConfig = {
   links: {
     // add your affiliate link here
     billigerhost: "https://billing.billigerhost.com/",
-    patreon: {
-      holyunblocker: "https://www.patreon.com/holyunblocker",
-    },
     github: {
       ultraviolet: "https://github.com/titaniumnetwork-dev/Ultraviolet",
       titaniumnetwork: "https://github.com/titaniumnetwork-dev",
