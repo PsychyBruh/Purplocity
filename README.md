@@ -9,6 +9,14 @@
 Host your own instance of Purplocity, no configuration required at all.
 
 You will need to install git and at least NodeJS v19.
+Need to check your Node version? Just run
+```sh
+node check-node-version.js
+```
+
+
+
+
 
 ```sh
 git clone https://github.com/PsychyBruh/Purplocity
