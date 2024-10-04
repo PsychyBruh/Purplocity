@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "auto-npm": "node auto-npm.js",
     "start": "node ./run-server.js",
     "dev": "astro dev",
     "build": "astro check && astro build",
@@ -11,7 +12,7 @@
     "astro": "astro"
   },
   "engines": {
-    "node": ">=19.0.0 <=20.0.0"
+    "node": ">=19.0.0 <=v20.18.0"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.1",
