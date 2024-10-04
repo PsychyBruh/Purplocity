@@ -1,5 +1,5 @@
-# Use the official Node.js image with Alpine
-FROM node:20-alpine
+# Switch to a Debian-based Node.js image (it comes with a wider range of packages)
+FROM node:20-slim
 
 # Set environment variable for production
 ENV NODE_ENV=production
@@ -13,15 +13,15 @@ LABEL description="Example application of Purplocity's frontend which can be dep
 # Set the working directory inside the container
 WORKDIR /app
 
-# Install necessary packages for building (python3, make, g++, libvips-dev, etc.)
-RUN apk add --no-cache --upgrade \
+# Install necessary build dependencies for sharp and other packages
+RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
     libvips-dev \
     bash \
-    libc6-compat \
-    && rm -rf /var/cache/apk/*
+    libc6-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy only package.json and package-lock.json to leverage Docker cache
 COPY package*.json ./
