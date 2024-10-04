@@ -46,7 +46,7 @@ async function autoInstall() {
 
       // Parse error for missing dependencies
       const missingDependencies = extractMissingDependencies(err.stderr);
-      
+
       if (missingDependencies.length === 0) {
         console.log('No missing dependencies found. Exiting...');
         break;
@@ -101,7 +101,27 @@ function extractMissingDependencies(stderr) {
   return missingDeps;
 }
 
+// Function to ensure sharp and native dependencies are correctly installed
+async function installSharpDependencies() {
+  const sharpDependencies = ['sharp', 'libvips', 'node-gyp', 'python3', 'make', 'gcc'];
+
+  for (const dep of sharpDependencies) {
+    console.log(`Attempting to install ${dep}...`);
+    try {
+      await installDependency(dep);
+      console.log(`${dep} successfully installed.`);
+    } catch (installError) {
+      console.error(`Failed to install ${dep}: ${installError.stderr || installError.error.message}`);
+    }
+  }
+}
+
 // Run the automatic installation process
 autoInstall().catch(err => {
   console.error('Critical error:', err);
+});
+
+// If sharp or native dependencies are suspected, ensure they are installed
+installSharpDependencies().catch(err => {
+  console.error('Error installing native dependencies:', err);
 });
