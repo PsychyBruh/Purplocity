@@ -43,7 +43,7 @@ async function autoInstall() {
       success = true; // If npm install succeeds, break out of the loop
     } catch (err) {
       console.error(`Error during installation: ${err.error.message}`);
-      
+
       // Parse error for missing dependencies
       const missingDependencies = extractMissingDependencies(err.stderr);
       
@@ -75,11 +75,11 @@ async function autoInstall() {
 // Function to extract missing dependencies from error stderr
 function extractMissingDependencies(stderr) {
   const missingDeps = [];
-  
+
   // Regular expression to capture common npm missing dependency errors
-  const missingDepRegex = /(npm ERR! (?:Could not resolve|missing) (?:peer|dev) dependency:|No matching version found for)\s+(.+?)(?:\s+at)/g;
+  const missingDepRegex = /(npm ERR! (?:Could not resolve|missing) (?:peer|dev) dependency:|No matching version found for)\s+(.+?)(?:\s+at|$)/g;
   let match;
-  
+
   // Find all matches for missing dependencies
   while ((match = missingDepRegex.exec(stderr)) !== null) {
     const dep = match[2].split('@')[0]; // Remove version if present
@@ -87,7 +87,17 @@ function extractMissingDependencies(stderr) {
       missingDeps.push(dep);
     }
   }
-  
+
+  // Special case for native dependencies (like sharp)
+  const nativeDeps = ['sharp', 'libvips', 'node-gyp', 'python', 'make', 'gcc'];
+  nativeDeps.forEach(dep => {
+    if (stderr.includes(dep)) {
+      if (!missingDeps.includes(dep)) {
+        missingDeps.push(dep);
+      }
+    }
+  });
+
   return missingDeps;
 }
 
