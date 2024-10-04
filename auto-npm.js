@@ -1,5 +1,4 @@
-const { exec } = require('child_process');
-const fs = require('fs');
+import { exec } from 'child_process';
 
 // Helper function to run npm install
 function runNpmInstall() {
@@ -78,12 +77,12 @@ function extractMissingDependencies(stderr) {
   const missingDeps = [];
   
   // Regular expression to capture common npm missing dependency errors
-  const missingDepRegex = /Could not resolve.*'(.*)'/g;
+  const missingDepRegex = /(npm ERR! (?:Could not resolve|missing) (?:peer|dev) dependency:|No matching version found for)\s+(.+?)(?:\s+at)/g;
   let match;
   
   // Find all matches for missing dependencies
   while ((match = missingDepRegex.exec(stderr)) !== null) {
-    const dep = match[1].split('@')[0]; // Remove version if present
+    const dep = match[2].split('@')[0]; // Remove version if present
     if (!missingDeps.includes(dep)) {
       missingDeps.push(dep);
     }
