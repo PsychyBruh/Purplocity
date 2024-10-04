@@ -1,7 +1,7 @@
 FROM node:20-alpine
 
 ENV NODE_ENV=production
-EXPOSE 8080/tcp
+EXPOSE 8443/tcp
 
 LABEL maintainer="Purplocity"
 LABEL summary="Purplocity Frontend"
