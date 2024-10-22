@@ -100,7 +100,7 @@ We provide an example configuration in [./config/config.example.js](./config/con
 
 8. Setup a reverse proxy
 
-   By default, Purplocity listens on http://127.0.0.1:8443/ and isn't accessible over the internet.
+   By default, Purplocity listens on http://127.0.0.1:8080/ and isn't accessible over the internet.
 
    Keep in mind that you want to setup HTTPS/SSL, otherwise Ultraviolet won't work.
 

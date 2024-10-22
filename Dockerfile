@@ -3,7 +3,7 @@ FROM node:20-slim
 
 # Set environment variable for production
 ENV NODE_ENV=production
-EXPOSE 8443/tcp
+EXPOSE 8080/tcp
 
 # Labels for the image
 LABEL maintainer="Purplocity"
